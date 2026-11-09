@@ -76,7 +76,7 @@ allowfullscreen>
 </div>
 
 </div>
-</body><h2>🧮 GOLD RISK CALCULATOR</h2>
+<h2>🧮 GOLD RISK CALCULATOR</h2>
 
 <div style="background:#151d2b;padding:15px;border-radius:10px;margin:10px 0;">
 
@@ -571,6 +571,54 @@ style="background:#111827;padding:10px;color:#f5c542;font-size:13px;">
 
 <label class="indicator-item">
 <span>📈 EMA 9/21/50/200</span>
-<input class="indicator
+<input class="indicator-switch" type="checkbox" data-name="EMA">
+</label>
+</div>
+
+<p class="indicator-note" id="ashishIndicatorStatus">
+Indicator Manager Ready
+</p>
+
+</div>
+
+<script>
+const chart = document.getElementById("goldTradingChart");
+
+document.querySelectorAll(".tf-button").forEach(button => {
+button.addEventListener("click", function() {
+
+document.querySelectorAll(".tf-button").forEach(b => b.classList.remove("active"));
+
+this.classList.add("active");
+
+const url = new URL(chart.src);
+url.searchParams.set("interval", this.dataset.tf);
+chart.src = url.toString();
+
+});
+});
+
+function ashishShowAll() {
+document.querySelectorAll(".indicator-switch").forEach(item => {
+item.checked = true;
+});
+}
+
+function ashishHideAll() {
+document.querySelectorAll(".indicator-switch").forEach(item => {
+item.checked = false;
+});
+}
+
+function ashishFullscreen() {
+const box = document.getElementById("mainChart");
+
+if (!document.fullscreenElement) {
+box.requestFullscreen();
+} else {
+document.exitFullscreen();
+}
+}
+</script>
 </body>
 </html>
