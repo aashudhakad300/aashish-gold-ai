@@ -1,36 +1,185 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#080b12">
-<title>ASHISH GOLD AI — SMC PRO</title>
-
+<title>Gold Terminal</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightweight-charts/4.1.3/lightweight-charts.standalone.production.js"></script>
 <style>
-:root{
---bg:#080b12;--panel:#101722;--panel2:#0c121c;
---line:#26344a;--gold:#e9b957;--text:#edf2fa;
---muted:#91a0b5;--green:#24c995;--red:#f16e7d;
-}
-*{box-sizing:border-box}
-body{
-margin:0;background:var(--bg);color:var(--text);
-font:14px/1.5 Arial,system-ui,sans-serif
-}
-button,input,select{font:inherit}
-button{cursor:pointer}
-.app{max-width:1800px;margin:auto;padding:12px}
-header{
-display:flex;justify-content:space-between;align-items:center;
-gap:12px;padding:15px;background:#111b2a;
-border:1px solid var(--line);border-radius:13px;margin-bottom:12px
-}
-.logo{font-size:20px;font-weight:900;color:var(--gold)}
-h1{font-size:17px;margin:0}
-.sub{font-size:10px;color:var(--muted)}
-.actions{display:flex;gap:8px;flex-wrap:wrap}
-button{
-background:#182438;color:white;border:1px solid var(--line);
-padding:9px 12px;border-radius:8px;font-size:11px
-}
-button.active,button:hover
+:root{--bg:#14181f;--pn:#1a2029;--ln:#2a3340;--tx:#e7e2d6;--mu:#8b93a1;--au:#d9a441;--up:#3fb68b;--dn:#e5645f;color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--tx);font:13px/1.45 Manrope,system-ui,sans-serif;display:flex;flex-direction:column;font-variant-numeric:tabular-nums}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:8px 12px;border-bottom:1px solid var(--ln)}
+h1{font-size:15px;font-weight:800;margin:0;color:var(--au)}
+#px{font-size:22px;font-weight:800}#ch{font-weight:600}
+.up{color:var(--up)}.dn{color:var(--dn)}.mu{color:var(--mu)}
+button,select,input{font:inherit;color:var(--tx);background:var(--pn);border:1px solid var(--ln);border-radius:6px;padding:4px 9px}
+button{cursor:pointer}button:hover{border-color:var(--au)}button.on{background:var(--au);color:#14181f;border-color:var(--au);font-weight:600}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--au);outline-offset:1px}
+.bar{display:flex;gap:4px;flex-wrap:wrap}
+main{flex:1;min-height:0;display:grid;grid-template-columns:1fr 340px}
+#cc{display:flex;flex-direction:column;min-height:0;min-width:0}
+#main{flex:3;min-height:0}#sub{flex:1;min-height:0;border-top:1px solid var(--ln)}
+aside{border-left:1px solid var(--ln);display:flex;flex-direction:column;min-height:0}
+#tabs{display:flex;flex-wrap:wrap;gap:4px;padding:8px;border-bottom:1px solid var(--ln)}
+.pp{display:none;padding:10px;overflow:auto;flex:1}.pp.on{display:block}
+table{width:100%;border-collapse:collapse}td{padding:3px 0;border-bottom:1px solid var(--ln)}td:last-child{text-align:right}
+.sig{font-size:30px;font-weight:800;margin:0}.BUY{color:var(--up)}.SELL{color:var(--dn)}.WAIT{color:var(--au)}
+.chip{display:inline-block;padding:1px 8px;border:1px solid var(--ln);border-radius:10px;margin:0 4px 4px 0}
+label{display:block;padding:2px 0}h3{margin:12px 0 6px;font-size:13px}
+.row{display:flex;gap:6px;margin:6px 0;flex-wrap:wrap}.row input{width:90px}
+small{color:var(--mu)}
+#toast{position:fixed;right:12px;bottom:12px;background:var(--au);color:#14181f;padding:8px 12px;border-radius:6px;font-weight:600;display:none}
+body.wide main{grid-template-columns:1fr}body.wide aside{display:none}
+@media(max-width:900px){body{height:auto}main{grid-template-columns:1fr}#cc{height:78vh}aside{border-left:0;border-top:1px solid var(--ln);height:70vh}}
+</style></head><body>
+<header>
+<h1>Gold Terminal</h1><span class="mu" id="srcl"></span>
+<span id="px">-</span><span id="ch"></span>
+<span class="bar" id="tfs"></span>
+<span class="bar">
+<button id="hl" title="Click the chart to draw a horizontal line">Line tool</button>
+<button id="clr">Clear lines</button>
+<button id="lay">Wide layout</button>
+<button id="fs">Full screen</button></span>
+</header>
+<main>
+<div id="cc"><div id="main"></div><div id="sub"></div></div>
+<aside><div id="tabs"></div>
+<div class="pp" id="p-sig"></div>
+<div class="pp" id="p-smc"></div>
+<div class="pp" id="p-scan"></div>
+<div class="pp" id="p-ind"></div>
+<div class="pp" id="p-al">
+<h3>Price alerts</h3><div class="row"><input id="alp" type="number" step="0.01" placeholder="Price"><button id="ala">Add alert</button></div><div id="all"></div></div>
+<div class="pp" id="p-jr">
+<h3>Log a trade</h3><div class="row"><select id="js"><option>BUY</option><option>SELL</option></select><input id="je" type="number" step="0.01" placeholder="Entry"><input id="jx" type="number" step="0.01" placeholder="Exit"><input id="jl" type="number" step="0.01" placeholder="Lots" value="0.1"><button id="ja">Save trade</button></div>
+<div id="jst"></div><div id="jlist"></div></div>
+<div class="pp" id="p-set">
+<h3>Data source</h3><div class="row"><select id="src"><option value="paxg">PAXG/USDT (free, gold proxy)</option><option value="td">XAU/USD spot (Twelve Data key)</option></select></div><div class="row"><input id="tk" placeholder="Twelve Data API key" style="width:100%"></div><div class="row"><button id="tks">Save and reload</button></div><small>The key stays in this browser only.</small><h3>Telegram alerts</h3><small>Stored only in this browser. Never commit a bot token to GitHub.</small>
+<div class="row"><input id="tt" placeholder="Bot token" style="width:100%"></div>
+<div class="row"><input id="tc" placeholder="Chat ID"><button id="ts">Save</button><button id="tx">Send test</button></div>
+<h3>Market today</h3><div id="mk"></div></div>
+</aside></main>
+<div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const API='https://data-api.binance.vision/api/v3/',WS='wss://data-stream.binance.vision/ws/paxgusdt@kline_';
+const TF=['1m','5m','15m','1h','4h','1d'];
+const rd=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}};
+let cfg=Object.assign({tf:'15m',osc:'rsi',hl:[],tg:{t:'',c:''},src:'paxg',key:'',ind:{ema9:1,ema21:1,ema50:1,ema200:0,bb:0,vwap:0,st:1,smc:1,pat:1}},rd('gt',{}));
+const save=()=>localStorage.setItem('gt',JSON.stringify(cfg));
+let al=rd('ga',[]),jr=rd('gj',[]),D=[],A={},M={},T24={},ws,dyn=[],pls=[],hls=[],subS=[],tool=0,busy=0,lastSig='';
+const f=x=>x==null||isNaN(x)?'-':(+x).toFixed(2);
+const fm=t=>new Date(t*1000).toLocaleString([],{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',4000)}
+async function tg(m){const{t,c}=cfg.tg;if(!t||!c)return;try{await fetch(`https://api.telegram.org/bot${t}/sendMessage`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:c,text:m})})}catch(e){toast('Telegram failed')}}
+
+/* ---------- indicators ---------- */
+const ema=(v,p)=>{const k=2/(p+1);let e;return v.map((x,i)=>e=i?x*k+e*(1-k):x)};
+const mask=(a,p)=>a.map((v,i)=>i<p-1?null:v);
+const sma=(a,p)=>a.map((_,i)=>i<p-1?null:a.slice(i-p+1,i+1).reduce((s,x)=>s+x,0)/p);
+function rsi(c,p=14){const o=Array(c.length).fill(null);let g=0,l=0;for(let i=1;i<c.length;i++){const d=c[i]-c[i-1],u=Math.max(d,0),w=Math.max(-d,0);if(i<=p){g+=u/p;l+=w/p}else{g=(g*(p-1)+u)/p;l=(l*(p-1)+w)/p}if(i>=p)o[i]=l?100-100/(1+g/l):100}return o}
+const trg=(d,i)=>i?Math.max(d[i].high-d[i].low,Math.abs(d[i].high-d[i-1].close),Math.abs(d[i].low-d[i-1].close)):d[i].high-d[i].low;
+function atr(d,p=14){const o=Array(d.length).fill(null);let a=0;d.forEach((_,i)=>{const t=trg(d,i);a=i<p?a+t/p:(a*(p-1)+t)/p;if(i>=p-1)o[i]=a});return o}
+function adx(d,p=14){const o=Array(d.length).fill(null),dx=[];let tr=0,pd=0,md=0,ax=null;for(let i=1;i<d.length;i++){const u=d[i].high-d[i-1].high,w=d[i-1].low-d[i].low,P=u>w&&u>0?u:0,N=w>u&&w>0?w:0,t=trg(d,i);if(i<=p){tr+=t;pd+=P;md+=N}else{tr+=t-tr/p;pd+=P-pd/p;md+=N-md/p}if(i>=p){const a=100*pd/tr,b=100*md/tr,x=100*Math.abs(a-b)/((a+b)||1);dx.push(x);if(dx.length==p)ax=dx.reduce((s,y)=>s+y,0)/p;else if(dx.length>p)ax=(ax*(p-1)+x)/p;if(ax!=null)o[i]=ax}}return o}
+function supertrend(d,p=10,m=3){const a=atr(d,p),o=Array(d.length).fill(null),dir=Array(d.length).fill(1);let fu,fl,tr=1;for(let i=p;i<d.length;i++){const h=(d[i].high+d[i].low)/2,bu=h+m*a[i],bl=h-m*a[i];if(i==p){fu=bu;fl=bl}else{fu=bu<fu||d[i-1].close>fu?bu:fu;fl=bl>fl||d[i-1].close<fl?bl:fl}if(tr==1&&d[i].close<fl)tr=-1;else if(tr==-1&&d[i].close>fu)tr=1;o[i]=tr==1?fl:fu;dir[i]=tr}return{o,dir}}
+function vwap(d){let pv=0,v=0,day=-1;return d.map(x=>{const dd=Math.floor(x.time/86400);if(dd!=day){day=dd;pv=0;v=0}const tp=(x.high+x.low+x.close)/3;pv+=tp*x.volume;v+=x.volume;return v?pv/v:tp})}
+function stoch(r,p=14){const k=r.map((v,i)=>{if(v==null||i<p*2-1)return null;const w=r.slice(i-p+1,i+1),lo=Math.min(...w),hi=Math.max(...w);return hi==lo?50:(v-lo)/(hi-lo)*100});const ks=sma(k.map(x=>x??0),3).map((v,i)=>k[i]==null||i<p*2+1?null:v);return{k:ks,d:sma(ks.map(x=>x??0),3).map((v,i)=>ks[i]==null||i<p*2+3?null:v)}}
+
+/* ---------- SMC ---------- */
+function smc(d){const n=d.length,L=3,mk=[],ob=[];let lh=null,ll=null,tr=0;
+for(let i=2*L;i<n;i++){const p=i-L,c=d[i];
+if(d.slice(p-L,p).every(x=>x.high<d[p].high)&&d.slice(p+1,p+L+1).every(x=>x.high<d[p].high))lh={i:p,v:d[p].high};
+if(d.slice(p-L,p).every(x=>x.low>d[p].low)&&d.slice(p+1,p+L+1).every(x=>x.low>d[p].low))ll={i:p,v:d[p].low};
+if(lh&&!lh.b){if(c.close>lh.v){mk.push({time:c.time,position:'belowBar',color:'#3fb68b',shape:'circle',text:tr<0?'CHoCH':'BOS'});for(let j=i-1;j>=lh.i;j--)if(d[j].close<d[j].open){ob.push({t:d[j].time,hi:d[j].high,lo:d[j].low,bull:1});break}tr=1;lh.b=1}else if(c.high>lh.v&&!lh.s){lh.s=1;mk.push({time:c.time,position:'aboveBar',color:'#d9a441',shape:'square',text:'BSL sweep'})}}
+if(ll&&!ll.b){if(c.close<ll.v){mk.push({time:c.time,position:'aboveBar',color:'#e5645f',shape:'circle',text:tr>0?'CHoCH':'BOS'});for(let j=i-1;j>=ll.i;j--)if(d[j].close>d[j].open){ob.push({t:d[j].time,hi:d[j].high,lo:d[j].low,bull:0});break}tr=-1;ll.b=1}else if(c.low<ll.v&&!ll.s){ll.s=1;mk.push({time:c.time,position:'belowBar',color:'#d9a441',shape:'square',text:'SSL sweep'})}}}
+const fv=[];for(let i=2;i<n;i++){const a=d[i-2],c=d[i];let g=null;if(c.low>a.high)g={bull:1,lo:a.high,hi:c.low};else if(c.high<a.low)g={bull:0,lo:c.high,hi:a.low};if(g){g.t=d[i-1].time;if(!d.slice(i+1).some(x=>g.bull?x.low<=g.lo:x.high>=g.hi))fv.push(g)}}
+return{mk,ob:ob.slice(-3),fvg:fv.slice(-4),tr,hi:lh?lh.v:null,lo:ll?ll.v:null}}
+
+/* ---------- candle patterns ---------- */
+function pat(d,i){if(i<3)return null;const c=d[i],p=d[i-1],q=d[i-2],b=Math.abs(c.close-c.open),r=c.high-c.low||1e-9,u=c.high-Math.max(c.open,c.close),l=Math.min(c.open,c.close)-c.low;
+const bull=x=>x.close>x.open,bear=x=>x.close<x.open,pb=Math.abs(p.close-p.open);
+if(bull(c)&&bear(p)&&c.close>=p.open&&c.open<=p.close&&b>pb)return['Bullish engulfing',1];
+if(bear(c)&&bull(p)&&c.open>=p.close&&c.close<=p.open&&b>pb)return['Bearish engulfing',-1];
+if(bear(q)&&Math.abs(q.close-q.open)>r*.5&&pb<Math.abs(q.close-q.open)*.35&&bull(c)&&c.close>(q.open+q.close)/2)return['Morning star',1];
+if(bull(q)&&Math.abs(q.close-q.open)>r*.5&&pb<Math.abs(q.close-q.open)*.35&&bear(c)&&c.close<(q.open+q.close)/2)return['Evening star',-1];
+if(b<=r*.1)return['Doji',0];
+if(l>=2*b&&u<=b&&c.close<d[i-3].close)return['Hammer',1];
+if(u>=2*b&&l<=b&&c.close>d[i-3].close)return['Shooting star',-1];
+if(l>=r*.66)return['Pin bar (bull)',1];
+if(u>=r*.66)return['Pin bar (bear)',-1];
+return null}
+
+/* ---------- chart ---------- */
+const th={autoSize:true,layout:{background:{color:'#14181f'},textColor:'#8b93a1',fontFamily:'Manrope'},grid:{vertLines:{color:'#1d242e'},horzLines:{color:'#1d242e'}},rightPriceScale:{borderColor:'#2a3340'},timeScale:{borderColor:'#2a3340',timeVisible:true}};
+const main=LightweightCharts.createChart($('#main'),th),sub=LightweightCharts.createChart($('#sub'),th);
+const LS=(c,w=1)=>main.addLineSeries({color:c,lineWidth:w,priceLineVisible:false,lastValueVisible:false});
+const S={c:main.addCandlestickSeries({upColor:'#3fb68b',downColor:'#e5645f',borderVisible:false,wickUpColor:'#3fb68b',wickDownColor:'#e5645f'}),e9:LS('#f0e6c8'),e21:LS('#9ad0ec'),e50:LS('#d9a441',2),e200:LS('#c28ae8',2),bu:LS('#6b7a90'),bm:LS('#4a566a'),bl:LS('#6b7a90'),vw:LS('#e08a4f'),st:LS('#3fb68b',2)};
+const MAP={ema9:['e9'],ema21:['e21'],ema50:['e50'],ema200:['e200'],bb:['bu','bm','bl'],vwap:['vw'],st:['st']};
+main.timeScale().subscribeVisibleLogicalRangeChanged(r=>{if(r)sub.timeScale().setVisibleLogicalRange(r)});
+main.subscribeClick(e=>{if(tool&&e.point){const p=S.c.coordinateToPrice(e.point.y);cfg.hl.push(p);save();drawHL()}});
+function drawHL(){hls.forEach(l=>S.c.removePriceLine(l));hls=cfg.hl.map(p=>S.c.createPriceLine({price:p,color:'#9ad0ec',lineWidth:1,axisLabelVisible:true,title:'Line'}))}
+
+const TDI={'1m':'1min','5m':'5min','15m':'15min','1h':'1h','4h':'4h','1d':'1day'};let pt,lastM=0;
+const bn=async(tf,n)=>(await(await fetch(`${API}klines?symbol=PAXGUSDT&interval=${tf}&limit=${n}`)).json()).map(k=>({time:k[0]/1000,open:+k[1],high:+k[2],low:+k[3],close:+k[4],volume:+k[5]}));
+const td=async(tf,n)=>{const j=await(await fetch(`https://api.twelvedata.com/time_series?symbol=XAU/USD&interval=${TDI[tf]}&outputsize=${n}&timezone=UTC&apikey=${cfg.key}`)).json();if(j.status=='error'||!j.values)throw new Error(j.message||'Twelve Data error');return j.values.reverse().map(v=>({time:Date.parse(v.datetime.replace(' ','T')+'Z')/1000,open:+v.open,high:+v.high,low:+v.low,close:+v.close,volume:+(v.volume||0)}))};
+const cs=(t,n)=>cfg.src=='td'?td(t,n):bn(t,n);
+async function poll(){try{(await td(cfg.tf,3)).forEach(x=>{const l=D[D.length-1];if(x.time<l.time)return;if(x.time==l.time)D[D.length-1]=x;else D.push(x);S.c.update(x)});tick(D[D.length-1].close);if(!busy){busy=1;setTimeout(()=>{busy=0;render()},500)}}catch(e){toast(e.message)}}
+async function load(){
+$('#srcl').textContent=cfg.src=='td'?'XAU/USD spot (Twelve Data)':'PAXG/USDT (gold-backed, XAUUSD proxy)';
+try{if(cfg.src=='td'){if(!cfg.key)throw new Error('Add your Twelve Data key in the Setup tab');D=await td(cfg.tf,1000);const w=D.filter(x=>x.time>=D[D.length-1].time-86400);T24={openPrice:w[0].open,highPrice:Math.max(...w.map(x=>x.high)),lowPrice:Math.min(...w.map(x=>x.low)),volume:0}}else{D=await bn(cfg.tf,1000);T24=await(await fetch(API+'ticker/24hr?symbol=PAXGUSDT')).json()}}catch(e){toast(e.message||'Data load failed');return}
+S.c.setData(D);render();drawHL();main.timeScale().fitContent();live();mtf()}
+function live(){clearInterval(pt);if(ws){ws.onclose=null;ws.close();ws=null}if(cfg.src=='td'){pt=setInterval(poll,30000);return}ws=new WebSocket(WS+cfg.tf);ws.onmessage=e=>{const k=JSON.parse(e.data).k,x={time:k.t/1000,open:+k.o,high:+k.h,low:+k.l,close:+k.c,volume:+k.v},l=D[D.length-1];if(x.time==l.time)D[D.length-1]=x;else D.push(x);S.c.update(x);tick(x.close);if(!busy){busy=1;setTimeout(()=>{busy=0;render()},1500)}};ws.onclose=()=>{if(ws&&ws.t!=0)setTimeout(live,3000)}}
+function tick(p){$('#px').textContent=f(p);const o=+T24.openPrice;if(o){const d=p-o;$('#ch').textContent=(d>=0?'+':'')+f(d)+' ('+(d/o*100).toFixed(2)+'%)';$('#ch').className=d>=0?'up':'dn'}
+al=al.filter(a=>{if(a.up?p>=a.p:p<=a.p){const m='Gold hit '+f(a.p);toast(m);tg(m);try{new Notification(m)}catch(e){}return false}return true});localStorage.ga=JSON.stringify(al);drawAl()}
+
+function render(){const c=D.map(x=>x.close),n=D.length-1,T=D.map(x=>x.time);
+const ov=a=>a.map((v,i)=>v==null?{time:T[i]}:{time:T[i],value:v});
+A.c=c;A.e9=ema(c,9);A.e21=ema(c,21);A.e50=ema(c,50);A.e200=ema(c,200);
+S.e9.setData(ov(mask(A.e9,9)));S.e21.setData(ov(mask(A.e21,21)));S.e50.setData(ov(mask(A.e50,50)));S.e200.setData(ov(mask(A.e200,200)));
+const m=sma(c,20),sd=c.map((_,i)=>{if(i<19)return null;const w=c.slice(i-19,i+1);return Math.sqrt(w.reduce((s,x)=>s+(x-m[i])**2,0)/20)});
+S.bm.setData(ov(m));S.bu.setData(ov(m.map((v,i)=>v==null?null:v+2*sd[i])));S.bl.setData(ov(m.map((v,i)=>v==null?null:v-2*sd[i])));
+S.vw.setData(ov(vwap(D)));
+A.st=supertrend(D);S.st.setData(A.st.o.map((v,i)=>v==null?{time:T[i]}:{time:T[i],value:v,color:A.st.dir[i]>0?'#3fb68b':'#e5645f'}));
+A.rsi=rsi(c);A.atr=atr(D);A.adx=adx(D);
+const e12=ema(c,12),e26=ema(c,26),ml=e12.map((v,i)=>v-e26[i]),sg=ema(ml,9);A.ml=ml;A.sg=sg;A.mh=ml.map((v,i)=>v-sg[i]);
+for(const k in MAP)MAP[k].forEach(s=>S[s].applyOptions({visible:!!cfg.ind[k]}));
+/* SMC + patterns */
+dyn.forEach(s=>main.removeSeries(s));dyn=[];pls.forEach(l=>S.c.removePriceLine(l));pls=[];
+const Z=smc(D);A.smc=Z;let mk=[];
+const seg=(t0,hi,lo,col,title)=>{if(t0>=T[n])return;[hi,lo].forEach((v,k)=>{const s=main.addLineSeries({color:col,lineWidth:1,lineStyle:2,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false,title:k?'':title});s.setData([{time:t0,value:v},{time:T[n],value:v}]);dyn.push(s)})};
+if(cfg.ind.smc){mk=Z.mk.filter(x=>x.time>=T[Math.max(0,n-300)]);
+Z.ob.forEach(o=>seg(o.t,o.hi,o.lo,o.bull?'#3fb68b':'#e5645f',o.bull?'Demand OB':'Supply OB'));
+Z.fvg.forEach(g=>seg(g.t,g.hi,g.lo,g.bull?'#6fd3b0':'#f08a86','FVG'));
+const pl=(p,col,t)=>p!=null&&pls.push(S.c.createPriceLine({price:p,color:col,lineWidth:1,lineStyle:1,axisLabelVisible:true,title:t}));
+pl(Z.hi,'#d9a441','BSL');pl(Z.lo,'#d9a441','SSL');if(Z.hi&&Z.lo)pl((Z.hi+Z.lo)/2,'#8b93a1','EQ')}
+A.pats=[];for(let i=n;i>n-120&&i>3;i--){const p=pat(D,i);if(p){A.pats.push({t:T[i],n:p[0],b:p[1]});if(cfg.ind.pat)mk.push({time:T[i],position:p[1]<0?'aboveBar':'belowBar',color:p[1]>0?'#3fb68b':p[1]<0?'#e5645f':'#8b93a1',shape:p[1]>0?'arrowUp':p[1]<0?'arrowDown':'circle',text:p[0].split(' ')[0]})}}
+S.c.setMarkers(mk.sort((a,b)=>a.time-b.time));
+drawSub();panels();tick(c[n])}
+
+function drawSub(){subS.forEach(s=>sub.removeSeries(s));subS=[];const T=D.map(x=>x.time),o=cfg.osc;$('#sub').style.display=o=='off'?'none':'block';if(o=='off')return;
+const ser=a=>a.map((v,i)=>v==null||isNaN(v)?{time:T[i]}:{time:T[i],value:v});
+const ls=(c,a)=>{const s=sub.addLineSeries({color:c,lineWidth:1,priceLineVisible:false,title:''});s.setData(ser(a));subS.push(s);return s};
+if(o=='rsi'){const s=ls('#d9a441',A.rsi);[30,70].forEach(p=>s.createPriceLine({price:p,color:'#4a566a',lineWidth:1,lineStyle:2,axisLabelVisible:false}))}
+if(o=='macd'){const h=sub.addHistogramSeries({priceLineVisible:false});h.setData(A.mh.map((v,i)=>i<26?{time:T[i]}:{time:T[i],value:v,color:v>=0?'#3fb68b88':'#e5645f88'}));subS.push(h);ls('#9ad0ec',A.ml.map((v,i)=>i<26?null:v));ls('#d9a441',A.sg.map((v,i)=>i<34?null:v))}
+if(o=='adx')ls('#c28ae8',A.adx);
+if(o=='atr')ls('#e08a4f',A.atr);
+if(o=='stoch'){const s=stoch(A.rsi);ls('#9ad0ec',s.k);ls('#d9a441',s.d)}
+const r=main.timeScale().getVisibleLogicalRange();if(r)sub.timeScale().setVisibleLogicalRange(r)}
+
+/* ---------- analysis ---------- */
+async function mtf(){if(cfg.src=='td'&&Date.now()-lastM<290000)return;lastM=Date.now();for(const t of['15m','1h','4h']){try{const c=(await cs(t,210)).map(k=>k.close),a=ema(c,21),b=ema(c,50),n=c.length-1,s=(c[n]>b[n]?1:-1)+(a[n]>b[n]?1:-1);M[t]=s>0?1:s<0?-1:0}catch(e){}}panels()}
+setInterval(mtf,60000);
+function analyze(){const n=D.length-1,p=A.c[n],Z=A.smc;let s=0,w=0,why=[];
+const add=(v,wt,t)=>{s+=v*wt;w+=wt;why.push((v>0?'Bullish: ':v<0?'Bearish: ':'Neutral: ')+t)};
+add(p>A.e50[n]?1:-1,1.5,'price vs EMA 50');add(A.e9[n]>A.e21[n]?1:-1,1,'EMA 9 vs 21');if(n>=200)add(A.e50[n]>A.e200[n]?1:-1,1,'EMA 50 vs 200');
+const r=A.rsi[n];add(r>55?1:r<45?-1:0,1,'RSI '+f(r));add(A.mh[n]>0?1:-1,1,'MACD histogram');add(A.st.dir[n],1.5,'Supertrend');add(Z.tr,2,'market structure (BOS/CHoCH)');
+const eq=Z.hi&&Z.lo?(Z.hi+Z.lo)/2:p,zone=p>eq?'Premium':'Discount';add(zone=='Discount'?1:-1,.5,zone+' zone');
+for(const t in M)add(M[t],1,'higher timeframe '+t);
+const sc=w?s/w*100:0,adxv=A.adx[n],sig=adxv<18?'WAIT':sc>=35?'BUY':sc<=-35?'SELL':'WAIT',a=A.atr[n],risk=1.5*a,d=sig=='BUY'?1:-1;
+return{sig,conf:Math.round(Math.abs(sc)),score:sc,zone,adx:adxv,why,entry:p,sl:sig=='WAIT'?null:p-d*risk,tp:[1,2,3].map(k=>sig=='WAIT'?null:p+d*risk*k)}}
+
+function panels(){if(!D.length)return;const g=analyze(),Z=A.smc;
+$('#p-sig').innerHTML=`<p class="sig ${g.sig}">${g.sig}</p><div>Confluence score: <b>${g.conf}%</b> <small>(ADX ${f(g.adx)}${g.adx<18?', weak trend':''})</small></div><div style="margin:8px 0">${['15m','1h','4h'].map(t=>`<span class="chip ${M[t]>0?'up':M[t]<0?'dn':'mu'}">${t} ${M[t]>0?'up':M[t]<0?'down':'flat'}</span>`).join('')}</div>
+<table><tr><td>Entry</td><td>${f(g.entry)}</td></tr><tr><td>Stop loss</td><td>${f(g.sl)}</td></tr><tr><td>TP1</td><td>${f(g.tp[0])}</td></tr><tr><td>TP2</td><td>${f(g.tp[1])}</td></tr><tr><td>TP3</td><td>${f(g.tp[2])}</td></tr><tr><td>Risk to reward</td><td>${g.sig=='WAIT'?'-':'1:1 / 1:2 / 1:3'}</td></tr></table>
+<div class=
