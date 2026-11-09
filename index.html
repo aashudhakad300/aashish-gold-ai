@@ -159,5 +159,411 @@ Risk Reward: 1:3
 `;
 }
 </script>
+<!-- ===================================== -->
+<!-- ASHISH GOLD AI PROFESSIONAL TERMINAL -->
+<!-- VERSION 2.0 -->
+<!-- ===================================== -->
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+body{
+background:#080d18;
+color:#ffffff;
+font-family:Arial,sans-serif;
+margin:0;
+padding:0;
+}
+
+.terminal-main{
+width:100%;
+max-width:1600px;
+margin:auto;
+padding:10px;
+}
+
+.terminal-title{
+background:#111827;
+padding:16px;
+border-radius:10px;
+margin-bottom:12px;
+border:1px solid #263449;
+}
+
+.terminal-title h2{
+margin:0;
+font-size:21px;
+color:#f5c542;
+}
+
+.terminal-title p{
+font-size:12px;
+color:#9ca3af;
+margin:6px 0 0;
+}
+
+.terminal-section{
+background:#111827;
+border:1px solid #263449;
+border-radius:10px;
+padding:12px;
+margin-bottom:12px;
+}
+
+.terminal-heading{
+font-size:16px;
+font-weight:bold;
+color:#f5c542;
+margin-bottom:12px;
+}
+
+.timeframe-container{
+display:flex;
+flex-wrap:wrap;
+gap:7px;
+}
+
+.tf-button{
+background:#202c3d;
+color:white;
+border:1px solid #34445b;
+border-radius:6px;
+padding:10px 13px;
+font-size:13px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.tf-button.active{
+background:#e5a900;
+color:#111827;
+border-color:#e5a900;
+}
+
+.tf-button:disabled{
+opacity:.45;
+cursor:not-allowed;
+}
+
+.chart-container{
+width:100%;
+background:#000;
+border:1px solid #34445b;
+border-radius:10px;
+overflow:hidden;
+margin-bottom:12px;
+}
+
+.chart-container iframe{
+display:block;
+width:100% !important;
+height:75vh !important;
+min-height:450px;
+border:0;
+}
+
+.chart-actions{
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+margin-bottom:10px;
+}
+
+.action-button{
+background:#263449;
+color:white;
+border:1px solid #46566e;
+padding:11px 14px;
+border-radius:7px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.action-button:hover{
+background:#354761;
+}
+
+.indicator-grid{
+display:grid;
+grid-template-columns:repeat(2,minmax(0,1fr));
+gap:9px;
+}
+
+.indicator-item{
+background:#1a2637;
+border:1px solid #34445b;
+border-radius:8px;
+padding:12px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:5px;
+font-size:12px;
+}
+
+.indicator-item span{
+font-weight:bold;
+}
+
+.indicator-switch{
+width:42px;
+height:22px;
+accent-color:#16a34a;
+cursor:pointer;
+}
+
+.indicator-note{
+color:#9ca3af;
+font-size:11px;
+margin-top:12px;
+line-height:1.6;
+}
+
+.system-panel{
+background:#1a2637;
+padding:14px;
+border-radius:8px;
+margin-bottom:9px;
+border:1px solid #34445b;
+}
+
+.system-panel h3{
+font-size:14px;
+color:#f5c542;
+margin:0 0 7px;
+}
+
+.system-panel p{
+font-size:12px;
+color:#cbd5e1;
+margin:5px 0;
+}
+
+.system-status{
+color:#fbbf24;
+font-weight:bold;
+}
+
+.fullscreen-chart{
+position:fixed !important;
+inset:0 !important;
+z-index:99999 !important;
+width:100vw !important;
+height:100vh !important;
+background:#000 !important;
+margin:0 !important;
+padding:0 !important;
+border:0 !important;
+border-radius:0 !important;
+}
+
+.fullscreen-chart iframe{
+width:100% !important;
+height:100vh !important;
+min-height:100vh !important;
+}
+
+.terminal-footer{
+text-align:center;
+color:#64748b;
+font-size:11px;
+padding:15px;
+}
+
+@media(max-width:480px){
+
+.terminal-main{
+padding:6px;
+}
+
+.terminal-title h2{
+font-size:17px;
+}
+
+.indicator-grid{
+grid-template-columns:1fr;
+}
+
+.chart-container iframe{
+height:70vh !important;
+min-height:400px;
+}
+
+.tf-button{
+padding:9px 11px;
+font-size:12px;
+}
+
+}
+
+</style>
+
+
+<div class="terminal-main" id="ashishTerminal">
+
+<!-- HEADER -->
+
+<div class="terminal-title">
+
+<h2>🟡 ASHISH GOLD AI PRO</h2>
+
+<p>XAUUSD PROFESSIONAL TRADING TERMINAL</p>
+
+<p>Market: GOLD | Platform: TradingView</p>
+
+</div>
+
+
+<!-- TIMEFRAME PANEL -->
+
+<div class="terminal-section">
+
+<div class="terminal-heading">
+⏱️ SELECT TIMEFRAME
+</div>
+
+<div class="timeframe-container">
+
+<button class="tf-button active" data-tf="1">1M</button>
+
+<button class="tf-button" data-tf="2">2M</button>
+
+<button class="tf-button" data-tf="3">3M</button>
+
+<button class="tf-button" data-tf="5">5M</button>
+
+<button class="tf-button" data-tf="10">10M</button>
+
+<button class="tf-button" data-tf="15">15M</button>
+
+<button class="tf-button" data-tf="30">30M</button>
+
+<button class="tf-button" data-tf="60">1H</button>
+
+<button class="tf-button" data-tf="180">3H</button>
+
+<button class="tf-button" data-tf="240">4H</button>
+
+</div>
+
+<p class="indicator-note">
+नोट: TradingView Embed में कुछ Custom Timeframes उपलब्ध नहीं हो सकते। ऐसे Timeframes के लिए अलग Candle Data Engine बनाना होगा।
+</p>
+
+</div>
+
+
+<!-- CHART ACTIONS -->
+
+<div class="chart-actions">
+
+<button class="action-button" onclick="ashishFullscreen()">
+⛶ FULL SCREEN
+</button>
+
+<button class="action-button" onclick="ashishShowAll()">
+SHOW ALL
+</button>
+
+<button class="action-button" onclick="ashishHideAll()">
+HIDE ALL
+</button>
+
+</div>
+
+
+<!-- CHART AREA -->
+
+<div class="chart-container" id="ashishChartContainer">
+
+<div id="ashishChartToolbar"
+style="background:#111827;padding:10px;color:#f5c542;font-size:13px;">
+📊 XAUUSD LIVE CHART
+</div>
+
+</div>
+
+
+<!-- INDICATOR MANAGER -->
+
+<div class="terminal-section">
+
+<div class="terminal-heading">
+⚙️ INDICATOR MANAGER
+</div>
+
+<div class="indicator-grid" id="ashishIndicatorGrid">
+
+<label class="indicator-item">
+<span>📊 Footprint Chart</span>
+<input class="indicator-switch" type="checkbox" data-name="Footprint Chart">
+</label>
+
+<label class="indicator-item">
+<span>🔥 Liquidity Heatmap</span>
+<input class="indicator-switch" type="checkbox" data-name="Liquidity Heatmap">
+</label>
+
+<label class="indicator-item">
+<span>📈 Volume Profile</span>
+<input class="indicator-switch" type="checkbox" data-name="Volume Profile">
+</label>
+
+<label class="indicator-item">
+<span>📉 Cumulative Delta</span>
+<input class="indicator-switch" type="checkbox" data-name="Cumulative Delta">
+</label>
+
+<label class="indicator-item">
+<span>⚖️ Bid × Ask</span>
+<input class="indicator-switch" type="checkbox" data-name="Bid Ask">
+</label>
+
+<label class="indicator-item">
+<span>💥 Buy/Sell Imbalance</span>
+<input class="indicator-switch" type="checkbox" data-name="Imbalance">
+</label>
+
+<label class="indicator-item">
+<span>🧲 Absorption</span>
+<input class="indicator-switch" type="checkbox" data-name="Absorption">
+</label>
+
+<label class="indicator-item">
+<span>📚 DOM / Order Book</span>
+<input class="indicator-switch" type="checkbox" data-name="DOM">
+</label>
+
+<label class="indicator-item">
+<span>🎯 BOS / CHoCH</span>
+<input class="indicator-switch" type="checkbox" data-name="BOS CHoCH">
+</label>
+
+<label class="indicator-item">
+<span>🟦 Order Blocks</span>
+<input class="indicator-switch" type="checkbox" data-name="Order Blocks">
+</label>
+
+<label class="indicator-item">
+<span>🟪 Fair Value Gap</span>
+<input class="indicator-switch" type="checkbox" data-name="FVG">
+</label>
+
+<label class="indicator-item">
+<span>💧 Liquidity Sweep</span>
+<input class="indicator-switch" type="checkbox" data-name="Liquidity Sweep">
+</label>
+
+<label class="indicator-item">
+<span>📍 Support / Resistance</span>
+<input class="indicator-switch" type="checkbox" data-name="Support Resistance">
+</label>
+
+<label class="indicator-item">
+<span>📈 EMA 9/21/50/200</span>
+<input class="indicator
 </body>
 </html>
