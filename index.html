@@ -1,82 +1,61 @@
-import streamlit as st
-import pandas as pd
-import numpy as np
-import requests
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-from datetime import datetime, timedelta
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import StandardScaler
-import warnings
-import time
-warnings.filterwarnings('ignore')
-
-st.set_page_config(page_title="PROFESSIONAL AI TRADING", layout="wide", page_icon="🏆")
-
-# Custom CSS
-st.markdown("""
-<style>
-    .main-title { font-size: 2rem; font-weight: bold; background: linear-gradient(90deg, #ffd700, #ff8c00, #ff4444); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; }
-    .signal-buy { background: #0a3a2a22; border-left: 4px solid #00ff88; padding: 1rem; border-radius: 12px; margin: 0.5rem 0; }
-    .signal-sell { background: #3a1a1a22; border-left: 4px solid #ff4444; padding: 1rem; border-radius: 12px; margin: 0.5rem 0; }
-    .signal-wait { background: #1e1e2e; border-left: 4px solid #ffd700; padding: 1rem; border-radius: 12px; margin: 0.5rem 0; }
-    .checklist-pass { background: #0a3a2a22; border-left: 3px solid #00ff88; padding: 0.5rem; margin: 0.3rem 0; border-radius: 8px; }
-    .checklist-fail { background: #3a1a1a22; border-left: 3px solid #ff4444; padding: 0.5rem; margin: 0.3rem 0; border-radius: 8px; }
-    .level-card { background: #13161d; border-radius: 10px; padding: 0.5rem; text-align: center; border: 1px solid #2a2e3a; }
-    .level-price { font-size: 1rem; font-weight: bold; color: #ffd700; }
-    .meter { background: #2a2e3a; border-radius: 10px; height: 6px; overflow: hidden; }
-    .meter-fill { height: 100%; border-radius: 10px; }
-    .metric-card { background: #1e1e2e; border-radius: 10px; padding: 0.8rem; text-align: center; }
-</style>
-""", unsafe_allow_html=True)
-
-st.markdown('<div class="main-title">🏆 PROFESSIONAL XAUUSD & BTCUSD TRADING DASHBOARD</div>', unsafe_allow_html=True)
-
-# ============ CONFIGURATION ============
-API_KEY = "96871e27b094425f9ea104fa6eb2be64"
-TELEGRAM_BOT_TOKEN = "8369393711:AAGm8ydfJc3UQPyNCPR6uCEr1LQpFw-zV-4"
-
-# All Timeframes
-TIMEFRAMES = {
-    "1m": {"api": "1min", "minutes": 1, "send_interval": 1},
-    "5m": {"api": "5min", "minutes": 5, "send_interval": 5},
-    "15m": {"api": "15min", "minutes": 15, "send_interval": 15},
-    "30m": {"api": "30min", "minutes": 30, "send_interval": 30},
-    "1h": {"api": "1h", "minutes": 60, "send_interval": 60},
-    "4h": {"api": "4h", "minutes": 240, "send_interval": 240},
-    "1d": {"api": "1day", "minutes": 1440, "send_interval": 1440}
-}
-
-# Symbols
-SYMBOLS = {
-    "XAUUSD": {"api": "XAU/USD", "name": "Gold", "digits": 2, "color": "#ffd700", "spread": 0.50, "tp_pips": 4700, "sl_pips": 1700, "rr": 2.76},
-    "BTCUSD": {"api": "BTC/USD", "name": "Bitcoin", "digits": 0, "color": "#ff8c00", "spread": 15.0, "tp_pips": 44000, "sl_pips": 11000, "rr": 4.0}
-}
-
-# Session State
-if 'selected_symbol' not in st.session_state:
-    st.session_state.selected_symbol = "XAUUSD"
-if 'selected_tf' not in st.session_state:
-    st.session_state.selected_tf = "1h"
-if 'telegram_connected' not in st.session_state:
-    st.session_state.telegram_connected = False
-if 'telegram_chat_id' not in st.session_state:
-    st.session_state.telegram_chat_id = None
-if 'auto_send' not in st.session_state:
-    st.session_state.auto_send = False
-if 'trade_history' not in st.session_state:
-    st.session_state.trade_history = []
-if 'feedback_data' not in st.session_state:
-    st.session_state.feedback_data = []
-if 'backtest_results' not in st.session_state:
-    st.session_state.backtest_results = None
-if 'model_trained' not in st.session_state:
-    st.session_state.model_trained = False
-if 'learning_stats' not in st.session_state:
-    st.session_state.learning_stats = {'total_feedback': 0, 'wins': 0, 'losses': 0, 'win_rate': 0}
-
-# ============ TELEGRAM FUNCTIONS ============
-def send_telegram(chat_id, msg):
-    try:
-        url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-        payload = {"chat_id": chat_id, "text": msg, "parse_mode": "HTML
+<!doctype html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0e13">
+  <title>Gold Terminal — XAUUSD</title>
+  <style>
+    :root{color-scheme:dark;--bg:#0b0e13;--panel:#11161e;--panel2:#151b24;--line:#232b37;--muted:#8792a2;--text:#e8edf4;--gold:#e8b84c;--green:#32c98a;--red:#f06b72;--blue:#6aa9ff}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}button,select,input{font:inherit;color:inherit}button{background:#1b222d;border:1px solid var(--line);border-radius:6px;padding:7px 10px;cursor:pointer}button:hover,button.active{border-color:#b38d3b;color:var(--gold);background:#292519}.topbar{height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid var(--line);background:#0e1218;position:sticky;top:0;z-index:3}.brand{font-weight:750;letter-spacing:.04em}.brand b{color:var(--gold)}.top-actions,.row,.toolbar,.tfbar,.indicator-list{display:flex;align-items:center;gap:8px}.status{font-size:12px;color:var(--muted)}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--gold);margin-right:6px}.layout{max-width:1600px;margin:auto;padding:16px;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px}.maincol{min-width:0}.panel{background:var(--panel);border:1px solid var(--line);border-radius:9px}.quote{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.symbol{font-size:17px;font-weight:700}.symbol small{font-weight:400;color:var(--muted);font-size:12px}.price{font-size:25px;font-weight:700;letter-spacing:.02em}.change{color:var(--green);font-size:13px;margin-left:8px}.quote-stats{display:flex;gap:22px;color:var(--muted);font-size:12px}.quote-stats strong{display:block;color:var(--text);font-size:13px;font-weight:550}.chart-panel{overflow:hidden}.toolbar{padding:10px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap}.tfbar{margin-left:8px}.tfbar button{padding:5px 8px;font-size:12px}.grow{flex:1}.toggle{font-size:12px;padding:5px 8px}.chart-wrap{height:430px;position:relative;background:linear-gradient(180deg,#10151d,#0e131a)}canvas{display:block;width:100%;height:100%}.chart-caption{position:absolute;left:14px;top:10px;color:var(--muted);font-size:11px;pointer-events:none}.under-chart{padding:10px 14px;border-top:1px solid var(--line);color:var(--muted);font-size:11px;display:flex;justify-content:space-between;gap:10px}.indicators{padding:12px;margin-top:12px}.section-title{font-size:13px;font-weight:700;margin-bottom:10px}.indicator-list{flex-wrap:wrap}.ind{font-size:12px;color:#c3ccd8;background:#171e28;border:1px solid #2a3442;border-radius:20px;padding:5px 9px;cursor:pointer}.ind.on{color:var(--gold);border-color:#705b2d}.side{display:flex;flex-direction:column;gap:12px}.side .panel{padding:14px}.signal{font-size:21px;font-weight:750;color:var(--gold);margin:2px 0}.subtle{font-size:12px;color:var(--muted)}.meter{height:6px;background:#262e39;border-radius:8px;margin:9px 0 5px;overflow:hidden}.meter span{display:block;height:100%;width:0;background:var(--gold);transition:width .3s}.levels{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.level{background:var(--panel2);padding:9px;border-radius:6px}.level span{display:block;color:var(--muted);font-size:11px}.level strong{font-size:13px}.list{display:grid;gap:9px}.list-item{display:flex;justify-content:space-between;gap:8px;font-size:12px}.pill{font-size:10px;border-radius:10px;padding:2px 7px;background:#262d38;color:#aab4c2}.alert-form{display:flex;gap:6px;margin-top:10px}.alert-form input{width:100%;min-width:0;background:#0d1218;border:1px solid var(--line);border-radius:6px;padding:7px}.alert-row{margin-top:8px;padding-top:8px;border-top:1px solid var(--line);font-size:12px;display:flex;justify-content:space-between}.alert-row button{padding:1px 6px;color:var(--muted)}.foot{max-width:1600px;margin:0 auto;padding:0 16px 16px;color:#8993a2;font-size:11px}.disclaimer{color:#d8b962}.hide{display:none!important}
+    @media(max-width:900px){.layout{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr}.side .panel:last-child{grid-column:1/-1}.quote-stats{gap:10px}.chart-wrap{height:360px}}
+    @media(max-width:560px){.topbar{padding:0 12px}.status{display:none}.layout{padding:10px}.quote{align-items:flex-start;gap:8px}.quote-stats{display:none}.price{font-size:21px}.side{grid-template-columns:1fr}.side .panel:last-child{grid-column:auto}.chart-wrap{height:300px}.toolbar{gap:5px}.tfbar{margin-left:0}.indicator-list{gap:6px}}
+  </style>
+</head>
+<body>
+  <header class="topbar"><div class="brand"><b>◈</b> GOLD TERMINAL <span class="pill">MVP</span></div><div class="top-actions"><span class="status"><i class="dot"></i><span id="feed-status">DEMO FEED · simulated</span></span><button id="fullscreen">⛶ Full screen</button></div></header>
+  <main class="layout">
+    <section class="maincol">
+      <div class="panel quote"><div><div class="symbol">XAUUSD <small>Gold / US Dollar</small></div><div><span class="price" id="price">—</span><span class="change" id="change">DEMO</span></div></div><div class="quote-stats"><div>HIGH<strong id="high">—</strong></div><div>LOW<strong id="low">—</strong></div><div>TIMEFRAME<strong id="current-tf">15m</strong></div></div></div>
+      <section class="panel chart-panel"><div class="toolbar"><div class="tfbar" id="timeframes"><button data-tf="1m">1m</button><button data-tf="5m">5m</button><button data-tf="15m" class="active">15m</button><button data-tf="1h">1h</button><button data-tf="4h">4h</button><button data-tf="1d">1D</button></div><span class="grow"></span><button class="toggle" id="candle-toggle">Candles</button><button class="toggle" id="reset-chart">Reset</button></div><div class="chart-wrap" id="chart-wrap"><canvas id="chart" aria-label="Simulated XAUUSD candlestick chart"></canvas><div class="chart-caption">XAUUSD · <span id="chart-tf">15m</span> · DEMO DATA</div></div><div class="under-chart"><span>Drag to pan · Wheel to zoom</span><span id="last-update">Waiting for demo ticks</span></div></section>
+      <section class="panel indicators"><div class="section-title">Indicators <span class="subtle">(toggle overlay)</span></div><div class="indicator-list" id="indicators"><button class="ind on" data-ind="ema9">EMA 9</button><button class="ind on" data-ind="ema21">EMA 21</button><button class="ind" data-ind="ema50">EMA 50</button><button class="ind" data-ind="ema200">EMA 200</button><button class="ind" data-ind="bb">Bollinger</button><button class="ind" data-ind="rsi">RSI</button><button class="ind" data-ind="macd">MACD</button><button class="ind" data-ind="adx">ADX</button><button class="ind" data-ind="atr">ATR</button><button class="ind" data-ind="vwap">VWAP</button><button class="ind" data-ind="supertrend">Supertrend</button><button class="ind" data-ind="stoch">Stoch RSI</button></div><div id="indicator-readout" class="subtle" style="margin-top:12px">RSI — · MACD — · ADX — · ATR —</div></section>
+    </section>
+    <aside class="side">
+      <section class="panel"><div class="section-title">AI-style Technical Summary <span class="pill">RULE-BASED</span></div><div class="signal" id="signal">WAIT</div><div class="subtle" id="signal-reason">Waiting for enough demo candles.</div><div class="meter"><span id="score-meter"></span></div><div class="subtle">Confluence <b id="score">—</b>/100 · Demo only</div><div class="levels"><div class="level"><span>Reference entry</span><strong id="entry">—</strong></div><div class="level"><span>Illustrative stop</span><strong id="stop">—</strong></div><div class="level"><span>Illustrative TP1</span><strong id="tp1">—</strong></div><div class="level"><span>Illustrative TP2</span><strong id="tp2">—</strong></div></div></section>
+      <section class="panel"><div class="section-title">Market Snapshot</div><div class="list"><div class="list-item"><span>Trend (EMA 9/21)</span><b id="trend">—</b></div><div class="list-item"><span>RSI (14)</span><b id="rsi-value">—</b></div><div class="list-item"><span>Volatility (ATR)</span><b id="atr-value">—</b></div><div class="list-item"><span>Pattern scan</span><b id="pattern">—</b></div></div></section>
+      <section class="panel"><div class="section-title">Price Alerts</div><div class="subtle">Browser-only alerts; keep this page open.</div><div class="alert-form"><input id="alert-price" type="number" step="0.01" placeholder="Target price"><button id="add-alert">Add</button></div><div id="alerts"></div></section>
+      <section class="panel"><div class="section-title">Session Journal</div><div class="subtle">Saved locally in this browser (not synced).</div><div class="alert-form"><select id="journal-side" style="background:#0d1218;border:1px solid var(--line);border-radius:6px;padding:7px"><option>BUY</option><option>SELL</option><option>NOTE</option></select><input id="journal-note" placeholder="Short note"><button id="save-note">Save</button></div><div id="journal-list" style="margin-top:8px"></div></section>
+    </aside>
+  </main>
+  <footer class="foot"><span class="disclaimer">Important:</span> This MVP uses generated demo prices, not live XAUUSD market data. Signals and levels are educational illustrations, not financial advice or trade instructions. Do not trade using this demo feed.</footer>
+<script>
+(()=>{'use strict';
+ const $=s=>document.querySelector(s), canvas=$('#chart'),ctx=canvas.getContext('2d');
+ const colors={gold:'#e8b84c',green:'#32c98a',red:'#f06b72',blue:'#6aa9ff',purple:'#b68cff',muted:'#738091',grid:'#222a35'};
+ let tf='15m',candles=[],visible=100,offset=0,candlesMode=true,drag=null,alerts=JSON.parse(localStorage.getItem('gold-alerts')||'[]'),journal=JSON.parse(localStorage.getItem('gold-journal')||'[]');
+ const active=new Set(['ema9','ema21']);
+ function seed(){let p=2350; candles=[];for(let i=0;i<240;i++){let drift=Math.sin(i/17)*.12+(Math.random()-.5)*1.5;let o=p,c=Math.max(1,p+drift),h=Math.max(o,c)+Math.random()*.7,l=Math.min(o,c)-Math.random()*.7;candles.push({o,h,l,c,v:80+Math.random()*240,t:Date.now()-(240-i)*900000});p=c;} render();}
+ function tick(){let prev=candles.at(-1),d=(Math.random()-.49)*.34,o=prev.c,c=Math.max(1,o+d);prev.h=Math.max(prev.h,o,c);prev.l=Math.min(prev.l,o,c);prev.c=c;prev.v+=Math.random()*8;if(Math.random()<.045){let n={o:c,h:c+.1,l:c-.1,c,v:10,t:Date.now()};candles.push(n);candles.shift();}render();}
+ function ema(n){let a=2/(n+1),out=[],v=candles[0].c;candles.forEach((x,i)=>{v=i===0?x.c:x.c*a+v*(1-a);out.push(v)});return out}
+ function rsi(n=14){let g=0,l=0;for(let i=candles.length-n;i<candles.length;i++){let d=candles[i].c-candles[i-1].c;if(d>0)g+=d;else l-=d;}return l===0?100:100-100/(1+g/l)}
+ function atr(n=14){let s=0;for(let i=candles.length-n;i<candles.length;i++){let x=candles[i],prev=candles[i-1];s+=Math.max(x.h-x.l,Math.abs(x.h-prev.c),Math.abs(x.l-prev.c))}return s/n}
+ function pattern(){let a=candles.at(-1),b=candles.at(-2),body=Math.abs(a.c-a.o),range=a.h-a.l||.001,lower=Math.min(a.o,a.c)-a.l,upper=a.h-Math.max(a.o,a.c);if(body/range<.1)return'Doji';if(lower>body*2&&upper<body)return'Hammer-like';if(upper>body*2&&lower<body)return'Shooting-star-like';if(a.c>a.o&&b.c<b.o&&a.c>b.o&&a.o<b.c)return'Bullish engulfing';if(a.c<a.o&&b.c>b.o&&a.c<b.o&&a.o>b.c)return'Bearish engulfing';return'No clear pattern'}
+ function resize(){let r=canvas.getBoundingClientRect(),dpr=devicePixelRatio||1;canvas.width=Math.max(1,r.width*dpr);canvas.height=Math.max(1,r.height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);draw()}
+ function draw(){let w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!candles.length)return;ctx.clearRect(0,0,w,h);let pad={l:12,r:62,t:26,b:24},cw=w-pad.l-pad.r,ch=h-pad.t-pad.b,start=Math.max(0,candles.length-visible-offset),data=candles.slice(start,start+visible);if(data.length<2)return;let lo=Math.min(...data.map(x=>x.l)),hi=Math.max(...data.map(x=>x.h)),extra=(hi-lo)*.1||1;lo-=extra;hi+=extra;const y=p=>pad.t+(hi-p)/(hi-lo)*ch,x=i=>pad.l+i*cw/data.length;ctx.font='11px system-ui';ctx.lineWidth=1;
+ for(let i=0;i<=5;i++){let yy=pad.t+i*ch/5,val=hi-i*(hi-lo)/5;ctx.strokeStyle=colors.grid;ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(w-pad.r,yy);ctx.stroke();ctx.fillStyle=colors.muted;ctx.fillText(val.toFixed(2),w-pad.r+7,yy+4)}
+ for(let i=0;i<=6;i++){let xx=pad.l+i*cw/6;ctx.strokeStyle=colors.grid;ctx.beginPath();ctx.moveTo(xx,pad.t);ctx.lineTo(xx,pad.t+ch);ctx.stroke()}
+ const series=(vals,color,width=1.5)=>{ctx.beginPath();let begun=false;data.forEach((_,i)=>{let v=vals[start+i];if(v==null)return;let xx=x(i)+cw/data.length/2,yy=y(v);if(!begun){ctx.moveTo(xx,yy);begun=true}else ctx.lineTo(xx,yy)});ctx.strokeStyle=color;ctx.lineWidth=width;ctx.stroke()};
+ let candleW=Math.max(2,Math.min(9,cw/data.length*.62));data.forEach((c,i)=>{let xx=x(i)+cw/data.length/2,up=c.c>=c.o,col=up?colors.green:colors.red;ctx.strokeStyle=col;ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(xx,y(c.h));ctx.lineTo(xx,y(c.l));ctx.stroke();if(candlesMode){let top=y(Math.max(c.o,c.c)),height=Math.max(1,Math.abs(y(c.o)-y(c.c)));ctx.fillRect(xx-candleW/2,top,candleW,height)}else{ctx.beginPath();ctx.moveTo(xx-candleW/2,y(c.o));ctx.lineTo(xx+candleW/2,y(c.c));ctx.stroke()}});
+ if(active.has('ema9'))series(ema(9),colors.gold,1.7);if(active.has('ema21'))series(ema(21),colors.blue,1.7);if(active.has('ema50'))series(ema(50),colors.purple);if(active.has('ema200'))series(ema(200),colors.red);if(active.has('vwap'))series(candles.map((_,i)=>candles.slice(0,i+1).reduce((s,c)=>s+c.c*c.v,0)/candles.slice(0,i+1).reduce((s,c)=>s+c.v,0)), '#f2f2f2');if(active.has('bb')){let m=ema(20),sd=candles.map((_,i)=>{let a=candles.slice(Math.max(0,i-19),i+1).map(z=>z.c),avg=a.reduce((s,v)=>s+v,0)/a.length;return Math.sqrt(a.reduce((s,v)=>s+(v-avg)**2,0)/a.length)});series(m.map((v,i)=>v+2*sd[i]),'#62748b');series(m.map((v,i)=>v-2*sd[i]),'#62748b')}
+ let last=data.at(-1);ctx.setLineDash([4,4]);ctx.strokeStyle=last.c>=last.o?colors.green:colors.red;ctx.beginPath();ctx.moveTo(pad.l,y(last.c));ctx.lineTo(w-pad.r,y(last.c));ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=last.c>=last.o?colors.green:colors.red;ctx.fillRect(w-pad.r+2,y(last.c)-9,pad.r-4,18);ctx.fillStyle='#06110c';ctx.fillText(last.c.toFixed(2),w-pad.r+5,y(last.c)+4);
+ }
+ function render(){if(!candles.length)return;let last=candles.at(-1),first=candles.at(-2),diff=last.c-first.c;$('#price').textContent=last.c.toFixed(2);$('#change').textContent=`${diff>=0?'+':''}${diff.toFixed(2)} demo`;$('#change').style.color=diff>=0?colors.green:colors.red;$('#high').textContent=Math.max(...candles.slice(-48).map(x=>x.h)).toFixed(2);$('#low').textContent=Math.min(...candles.slice(-48).map(x=>x.l)).toFixed(2);$('#current-tf').textContent=tf;$('#chart-tf').textContent=tf;$('#last-update').textContent='Demo tick · '+new Date().toLocaleTimeString();let e9=ema(9).at(-1),e21=ema(21).at(-1),rv=rsi(),av=atr(),bull=e9>e21,score=Math.min(92,Math.round(35+Math.abs(e9-e21)/av*16+(rv>50&&rv<70?20:rv<50&&rv>30?8:0)));$('#trend').textContent=bull?'Bullish':'Bearish';$('#trend').style.color=bull?colors.green:colors.red;$('#rsi-value').textContent=rv.toFixed(1);$('#atr-value').textContent=av.toFixed(2);$('#indicator-readout').textContent=`RSI ${rv.toFixed(1)} · MACD ${(ema(12).at(-1)-ema(26).at(-1)).toFixed(2)} · ADX — · ATR ${av.toFixed(2)} · ADX/ATR not enabled in demo engine`;$('#pattern').textContent=pattern();let dir=bull&&rv<70?'BUY':!bull&&rv>30?'SELL':'WAIT';$('#signal').textContent=dir;$('#signal').style.color=dir==='BUY'?colors.green:dir==='SELL'?colors.red:colors.gold;$('#signal-reason').textContent=`${bull?'EMA 9 above EMA 21':'EMA 9 below EMA 21'} · RSI ${rv.toFixed(0)} · simulated candles`;$('#score').textContent=score;$('#score-meter').style.width=score+'%';$('#entry').textContent=last.c.toFixed(2);$('#stop').textContent=(last.c+(dir==='SELL'?1:-1)*av*1.5).toFixed(2);$('#tp1').textContent=(last.c+(dir==='SELL'?-1:1)*av*1.5).toFixed(2);$('#tp2').textContent=(last.c+(dir==='SELL'?-1:1)*av*3).toFixed(2);draw();checkAlerts(last.c)}
+ function renderAlerts(){let box=$('#alerts');box.innerHTML='';alerts.forEach((a,i)=>{let row=document.createElement('div');row.className='alert-row';row.innerHTML=`<span>XAUUSD ${a.direction} ${Number(a.price).toFixed(2)}</span><button data-remove="${i}" aria-label="Remove alert">×</button>`;box.append(row)});box.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{alerts.splice(+b.dataset.remove,1);saveAlerts()})}
+ function saveAlerts(){localStorage.setItem('gold-alerts',JSON.stringify(alerts));renderAlerts()}
+ function checkAlerts(price){alerts=alerts.filter(a=>{let hit=a.direction==='above'?price>=a.price:price<=a.price;if(hit){if('Notification'in window&&Notification.permission==='granted')new Notification('XAUUSD demo alert',{body:`Demo price ${price.toFixed(2)} crossed ${a.direction} ${a.price}`});return false}return true});localStorage.setItem('gold-alerts',JSON.stringify(alerts));renderAlerts()}
+ function renderJournal(){let box=$('#journal-list');box.innerHTML='';journal.slice(0,6).forEach(j=>{let d=document.createElement('div');d.className='alert-row';d.textContent=`${j.side} · ${j.price} · ${j.note}`;box.append(d)})}
+ $('#timeframes').onclick=e=>{let b=e.target.closest('[data-tf]');if(!b)return;tf=b.dataset.tf;document.querySelectorAll('#timeframes button').forEach(x=>x.classList.toggle('active',x===b));$('#current-tf').textContent=tf;$('#chart-tf').textContent=tf};$('#indicators').onclick=e=>{let b=e.target.closest('[data-ind]');if(!b)return;b.classList.toggle('on');b.classList.contains('on')?active.add(b.dataset.ind):active.delete(b.dataset.ind);render()};$('#candle-toggle').onclick=()=>{candlesMode=!candlesMode;$('#candle-toggle').textContent=candlesMode?'Candles':'Line';draw()};$('#reset-chart').onclick=()=>{visible=100;offset=0;draw()};$('#fullscreen').onclick=()=>{let el=$('#chart-wrap');if(!document.fullscreenElement)el.requestFullscreen?.();else document.exitFullscreen?.()};$('#add-alert').onclick=async()=>{let p=Number($('#alert-price').value);if(!p)return;if('Notification'in window&&Notification.permission==='default')await Notification.requestPermission();alerts.push({price:p,direction:p>candles.at(-1).c?'above':'below'});$('#alert-price').value='';saveAlerts()};$('#save-note').onclick=()=>{let note=$('#journal-note').value.trim();if(!note)return;journal.unshift({side:$('#journal-side').value,price:candles.at(-1).c.toFixed(2),note,time:Date.now()});journal=journal.slice(0,20);localStorage.setItem('gold-journal',JSON.stringify(journal));$('#journal-note').value='';renderJournal()};
+ canvas.addEventListener('pointerdown',e=>{drag={x:e.clientX,offset};canvas.setPointerCapture(e.pointerId)});canvas.addEventListener('pointermove',e=>{if(!drag)return;offset=Math.max(0,Math.min(candles.length-visible,drag.offset+Math.round((drag.x-e.clientX)/6)));draw()});canvas.addEventListener('pointerup',()=>drag=null);canvas.addEventListener('wheel',e=>{e.preventDefault();visible=Math.max(25,Math.min(200,visible+(e.deltaY>0?10:-10)));draw()},{passive:false});window.addEventListener('resize',resize);renderAlerts();renderJournal();seed();setInterval(tick,1800);})();
+</script>
+</body>
+</html>
