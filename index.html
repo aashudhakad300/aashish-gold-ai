@@ -21,24 +21,24 @@
 <body>
   <header class="top">
     <div><div class="brand">ASHISH <span>GOLD AI</span> · SMC PRO</div><div class="sub">Independent Gold Analysis Workspace</div></div>
-    <div class="topright"><span id="connection" class="badge off">DATA NOT CONNECTED</span><span class="badge">BUILD 01 · CHART FOUNDATION</span></div>
+    <div class="topright"><span id="connection" class="badge off">DATA NOT CONNECTED</span><span class="badge">BUILD 02 · HYBRID CHART</span></div>
   </header>
   <main class="wrap">
     <section class="stats">
       <div class="stat"><div class="label">SYMBOL</div><div class="value">XAU/USD</div></div>
-      <div class="stat"><div class="label">LAST PRICE</div><div class="value" id="lastPrice">—</div></div>
-      <div class="stat"><div class="label">PRICE CHANGE</div><div class="value" id="priceChange">—</div></div>
-      <div class="stat"><div class="label">DATA STATUS</div><div class="value" id="dataStatus" style="font-size:15px">Waiting for API</div></div>
+      <div class="stat"><div class="label">LAST PRICE</div><div class="value" id="lastPrice">TradingView</div></div>
+      <div class="stat"><div class="label">PRICE CHANGE</div><div class="value" id="priceChange">Embedded feed</div></div>
+      <div class="stat"><div class="label">DATA STATUS</div><div class="value" id="dataStatus" style="font-size:15px">Chart loading</div></div>
     </section>
     <section class="layout">
       <div class="panel">
-        <div class="panelhead"><h2>GOLD · CANDLESTICK CHART</h2><div class="sub" id="chartSymbol">XAU/USD · Provider data required</div></div>
+        <div class="panelhead"><h2>GOLD · TRADINGVIEW CHART</h2><div class="sub" id="chartSymbol">OANDA:XAUUSD · Embedded chart</div></div>
         <div class="toolbar" id="timeframes">
-          <button data-tf="1min" class="active">1m</button><button data-tf="5min">5m</button><button data-tf="15min">15m</button><button data-tf="30min">30m</button><button data-tf="1h">1H</button><button data-tf="4h">4H</button><button data-tf="1day">1D</button>
+          <button data-tf="1" class="active">1m</button><button data-tf="5">5m</button><button data-tf="15">15m</button><button data-tf="30">30m</button><button data-tf="60">1H</button><button data-tf="240">4H</button><button data-tf="D">1D</button>
           <button id="fitChart">Fit chart</button>
         </div>
-        <div id="chart" class="chartbox"><div id="chartPlaceholder" class="chart-placeholder"><div><strong>Your live Gold chart will appear here</strong>Connect a supported market-data API to load real candles.<br>No sample or fabricated prices are displayed.</div></div></div>
-        <div class="notice">Chart engine foundation. Real-time updates depend on your data provider, API plan and permitted refresh rate.</div>
+        <div id="chart" class="chartbox"><iframe id="tvChart" title="TradingView XAUUSD chart" src="https://www.tradingview.com/widgetembed/?symbol=OANDA%3AXAUUSD&interval=15&theme=dark&style=1&timezone=Asia%2FKolkata&hide_top_toolbar=false&hide_side_toolbar=false&allow_symbol_change=true" style="width:100%;height:100%;border:0" allowfullscreen loading="lazy"></iframe></div>
+        <div class="notice">TradingView chart is embedded here. Quotes and features depend on TradingView symbol availability and its widget permissions. Custom indicators will run in our separate analysis engine when its own candle feed is connected.</div>
       </div>
       <aside class="side">
         <section class="panel"><div class="panelhead"><h2>INDICATOR MANAGER</h2><span class="sub">Custom · No 3-indicator cap</span></div><div class="content">
@@ -56,31 +56,28 @@
           <div class="notice">Indicators are listed in the manager. Their calculations and chart overlays will be enabled after real candle data is connected.</div>
         </div></section>
         <section class="panel"><div class="panelhead"><h2>AI MARKET PANEL</h2><span class="badge off">NOT ACTIVE</span></div><div class="content"><div class="signal"><div class="label">CURRENT BIAS</div><strong>WAIT</strong><div class="muted">No live data — no trade signal generated.</div></div><div class="grid2" style="margin-top:9px"><div class="signal"><div class="label">ENTRY</div><strong>—</strong></div><div class="signal"><div class="label">STOP LOSS</div><strong>—</strong></div><div class="signal"><div class="label">TARGET 1</div><strong>—</strong></div><div class="signal"><div class="label">CONFIDENCE</div><strong>—</strong></div></div></div></section>
-        <section class="panel"><div class="panelhead"><h2>DATA CONNECTION</h2></div><div class="content settings"><label>Provider<select id="provider"><option value="twelvedata">Twelve Data (if XAU/USD is available on your plan)</option></select></label><label>API key<input id="apiKey" type="password" autocomplete="off" placeholder="Paste API key for local testing"></label><label>Refresh interval<select id="refresh"><option value="15">15 seconds</option><option value="30">30 seconds</option><option value="60">60 seconds</option></select></label><button id="connectBtn">Test / Connect data</button><div class="muted" style="font-size:11px">Important: a key entered here is visible to the browser. Do not publish a personal paid API key in a public GitHub Pages file. For production, use a secure backend/proxy.</div></div></section>
+        <section class="panel"><div class="panelhead"><h2>HYBRID DATA STATUS</h2></div><div class="content"><div class="signal"><div class="label">CHART PROVIDER</div><strong>TradingView</strong><div class="muted">Embedded XAU/USD chart. No API key is required for this chart widget.</div></div><div class="notice">Important: the embedded chart does not expose its candle data to our page. Our custom indicators, SMC calculations and AI signals need a separate permitted market-data feed. Never paste a private API key into public GitHub code.</div></div></section>
       </aside>
     </section>
     <div class="foot">ASHISH GOLD AI · Built step by step · Risk calculator intentionally excluded</div>
   </main>
-  <script type="module">
-    import { createChart, CandlestickSeries, LineSeries, ColorType } from 'https://cdn.jsdelivr.net/npm/lightweight-charts@5.0.8/+esm';
-    const root = document.getElementById('chart');
-    const placeholder = document.getElementById('chartPlaceholder');
-    const chart = createChart(root, {width:root.clientWidth,height:root.clientHeight,layout:{background:{type:ColorType.Solid,color:'#080d18'},textColor:'#aab7ca'},grid:{vertLines:{color:'#172337'},horzLines:{color:'#172337'}},rightPriceScale:{borderColor:'#26344a'},timeScale:{borderColor:'#26344a',timeVisible:true,secondsVisible:false},crosshair:{mode:1}});
-    const candles = chart.addSeries(CandlestickSeries,{upColor:'#21c58b',downColor:'#f06a78',borderVisible:false,wickUpColor:'#21c58b',wickDownColor:'#f06a78'});
-    const overlaySeries = {};
-    const activeIndicators = new Set();
-    let timeframe='1min', timer=null, lastBars=[];
-    const $=id=>document.getElementById(id);
-    new ResizeObserver(()=>chart.applyOptions({width:root.clientWidth,height:root.clientHeight})).observe(root);
-    $('fitChart').addEventListener('click',()=>chart.timeScale().fitContent());
-    $('timeframes').addEventListener('click',e=>{const b=e.target.closest('button[data-tf]');if(!b)return;timeframe=b.dataset.tf;document.querySelectorAll('#timeframes button[data-tf]').forEach(x=>x.classList.toggle('active',x===b));if($('apiKey').value.trim())loadData();});
-    document.querySelectorAll('[data-ind]').forEach(el=>el.addEventListener('change',()=>{const key=el.dataset.ind;if(el.checked)activeIndicators.add(key);else{activeIndicators.delete(key);if(overlaySeries[key]){chart.removeSeries(overlaySeries[key]);delete overlaySeries[key];}}if(lastBars.length)drawIndicators(lastBars);}));
-    function smaEma(values,period){const out=[];const k=2/(period+1);let prev=null;values.forEach((v,i)=>{prev=prev===null?v:v*k+prev*(1-k);if(i>=period-1)out.push({time:lastBars[i].time,value:prev});});return out;}
-    function drawIndicators(bars){const closes=bars.map(x=>x.close);const specs={EMA9:9,EMA21:21,EMA50:50,EMA200:200};for(const [key,p] of Object.entries(specs)){if(!activeIndicators.has(key))continue;if(overlaySeries[key])chart.removeSeries(overlaySeries[key]);const s=chart.addSeries(LineSeries,{color:key==='EMA9'?'#e8b84b':key==='EMA21'?'#6ca8ff':key==='EMA50'?'#b58cff':'#f4f6fa',lineWidth:2,priceLineVisible:false,lastValueVisible:false});s.setData(smaEma(closes,p));overlaySeries[key]=s;}}
-    async function loadData(){const key=$('apiKey').value.trim();if(!key){setStatus('API key required',false);return;}setStatus('Loading…',false);try{const url=`https://api.twelvedata.com/time_series?symbol=XAU/USD&interval=${encodeURIComponent(timeframe)}&outputsize=300&apikey=${encodeURIComponent(key)}`;const res=await fetch(url);const json=await res.json();if(!res.ok||json.status==='error'||!Array.isArray(json.values))throw new Error(json.message||'Provider did not return candle data. Check symbol, API access and quota.');const bars=json.values.slice().reverse().map(v=>({time:Math.floor(new Date(v.datetime.replace(' ','T')+'Z').getTime()/1000),open:Number(v.open),high:Number(v.high),low:Number(v.low),close:Number(v.close)})).filter(v=>Number.isFinite(v.time)&&[v.open,v.high,v.low,v.close].every(Number.isFinite));if(!bars.length)throw new Error('No valid candles received.');lastBars=bars;candles.setData(bars);chart.timeScale().fitContent();placeholder.classList.add('hidden');const last=bars[bars.length-1],first=bars[0];$('lastPrice').textContent=last.close.toFixed(2);const change=last.close-first.open;const pct=first.open?change/first.open*100:0;$('priceChange').textContent=`${change>=0?'+':''}${change.toFixed(2)} (${pct.toFixed(2)}%)`;$('priceChange').className='value '+(change>=0?'positive':'negative');$('chartSymbol').textContent=`XAU/USD · ${timeframe} · provider candles`;$('dataStatus').textContent='Data received';setStatus('CONNECTED · polling',true);drawIndicators(bars);if(timer)clearInterval(timer);timer=setInterval(loadData,Number($('refresh').value)*1000);}catch(err){setStatus('Connection failed',false);$('dataStatus').textContent='Check API access';console.error(err);alert('Live data connection failed: '+err.message);}}
-    function setStatus(text,ok){$('connection').textContent=text;$('connection').classList.toggle('off',!ok);}
-    $('connectBtn').addEventListener('click',loadData);
-    $('refresh').addEventListener('change',()=>{if(timer){clearInterval(timer);timer=setInterval(loadData,Number($('refresh').value)*1000);}});
+  <script>
+    const tvFrame = document.getElementById('tvChart');
+    const timeframeButtons = document.querySelectorAll('#timeframes button[data-tf]');
+    timeframeButtons.forEach(button => button.addEventListener('click', () => {
+      const interval = button.dataset.tf;
+      timeframeButtons.forEach(item => item.classList.toggle('active', item === button));
+      const base = 'https://www.tradingview.com/widgetembed/?symbol=OANDA%3AXAUUSD';
+      tvFrame.src = `${base}&interval=${encodeURIComponent(interval)}&theme=dark&style=1&timezone=Asia%2FKolkata&hide_top_toolbar=false&hide_side_toolbar=false&allow_symbol_change=true`;
+      document.getElementById('chartSymbol').textContent = `OANDA:XAUUSD · ${button.textContent} · TradingView`;
+    });
+    document.getElementById('fitChart').addEventListener('click', () => {
+      // The embedded TradingView widget owns its chart controls; use its built-in fit/scale controls.
+      tvFrame.focus();
+    });
+    document.getElementById('connection').textContent = 'TRADINGVIEW EMBED';
+    document.getElementById('connection').classList.remove('off');
+    document.getElementById('dataStatus').textContent = 'Embedded chart';
   </script>
 </body>
 </html>
