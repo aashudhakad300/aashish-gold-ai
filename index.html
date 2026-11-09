@@ -1,83 +1,321 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#080d18">
-  <title>ASHISH GOLD AI — SMC PRO</title>
-  <style>
-    :root{--bg:#080d18;--panel:#101827;--panel2:#0c1422;--line:#223047;--text:#e8eef8;--muted:#91a0b7;--gold:#e8b84b;--green:#21c58b;--red:#f06a78;--blue:#6ca8ff}
-    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-    button,input,select{font:inherit}button{cursor:pointer;color:var(--text);background:#172338;border:1px solid var(--line);border-radius:8px;padding:9px 12px}button:hover{border-color:var(--gold)}button.active{background:#473719;border-color:var(--gold);color:#ffe2a0}
-    .top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);background:#0b1220;position:sticky;top:0;z-index:5}.brand{font-weight:800;letter-spacing:.5px}.brand span{color:var(--gold)}.sub{color:var(--muted);font-size:12px}.topright{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.badge{padding:5px 9px;border:1px solid var(--line);border-radius:20px;color:var(--muted);font-size:12px}.badge.off{color:#ffd27b;border-color:#725b2a}
-    .wrap{max-width:1500px;margin:auto;padding:16px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}.stat,.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px}.stat{padding:12px 14px}.label{font-size:12px;color:var(--muted)}.value{font-size:20px;font-weight:750;margin-top:4px}.positive{color:var(--green)}.negative{color:var(--red)}
-    .layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:12px;align-items:start}.panel{overflow:hidden}.panelhead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}.panelhead h2{font-size:14px;margin:0}.toolbar{display:flex;gap:6px;flex-wrap:wrap;padding:10px;border-bottom:1px solid var(--line);background:var(--panel2)}.toolbar button{padding:7px 10px;font-size:12px}.chartbox{height:520px;min-height:360px;position:relative;background:#080d18}.chart-placeholder{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:var(--muted);padding:25px;pointer-events:none}.chart-placeholder strong{display:block;color:var(--text);font-size:16px;margin-bottom:6px}.chart-placeholder.hidden{display:none}
-    .side{display:grid;gap:12px}.content{padding:12px 14px}.row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #1c293c}.row:last-child{border:0}.toggle{accent-color:var(--gold);width:17px;height:17px}.muted{color:var(--muted)}.sectiontitle{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin:12px 0 6px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.signal{padding:14px;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}.signal strong{font-size:18px}.notice{font-size:12px;color:var(--muted);padding:10px 12px;border-top:1px solid var(--line)}.foot{padding:18px;text-align:center;color:var(--muted);font-size:12px}
-    .settings{display:grid;gap:8px}.settings label{display:grid;gap:4px;color:var(--muted);font-size:12px}.settings input,.settings select{width:100%;background:#09111e;color:var(--text);border:1px solid var(--line);border-radius:7px;padding:9px}
-    @media(max-width:900px){.layout{grid-template-columns:1fr}.side{grid-template-columns:1fr 1fr}.chartbox{height:460px}}
-    @media(max-width:600px){.wrap{padding:10px}.top{padding:11px}.stats{grid-template-columns:1fr 1fr}.value{font-size:17px}.side{grid-template-columns:1fr}.chartbox{height:400px}.brand{font-size:13px}}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080b12">
+<title>ASHISH GOLD AI — SMC PRO</title>
+<style>
+:root{--bg:#080b12;--panel:#101722;--panel2:#0c121c;--line:#243044;--gold:#e9b957;--gold2:#f6d58d;--text:#edf2fa;--muted:#91a0b5;--green:#24c995;--red:#f16e7d;--blue:#77aaff}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font:14px/1.45 Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+button,select{font:inherit}
+button{cursor:pointer}
+.app{max-width:1800px;margin:auto;padding:12px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 16px;background:linear-gradient(110deg,#141d2b,#0d1420);border:1px solid var(--line);border-radius:14px;margin-bottom:12px}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.logo{width:42px;height:42px;display:grid;place-items:center;border-radius:12px;background:linear-gradient(145deg,#ffe3a1,#bd8128);color:#17120a;font-weight:950;font-size:17px;box-shadow:0 5px 22px #e9b95724}
+h1{font-size:16px;letter-spacing:.5px;margin:0;font-weight:850}
+.brand p{margin:3px 0 0;color:var(--muted);font-size:10px;letter-spacing:1.6px}
+.actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pill{border:1px solid var(--line);border-radius:30px;padding:7px 10px;color:var(--muted);font-size:10px;white-space:nowrap}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:6px;box-shadow:0 0 9px #24c99588}
+.btn{border:1px solid var(--line);background:#172235;color:var(--text);padding:8px 11px;border-radius:8px;font-size:11px;font-weight:700}
+.btn:hover,.btn.active{border-color:var(--gold);color:var(--gold2);background:#332817}
+.btn.gold{background:linear-gradient(135deg,#f4d38a,#d69b3e);color:#17120a;border:0}
+.market-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-bottom:12px}
+.metric{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:10px 13px;min-width:0}
+.metric label{display:block;color:var(--muted);font-size:10px;letter-spacing:1px}
+.metric strong{display:block;font-size:17px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.metric small{color:var(--muted);font-size:10px}
+.main-grid{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:12px;align-items:start}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:13px;overflow:hidden;min-width:0}
+.chart-card{padding:12px}
+.chart-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.symbol-area{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.symbol-title{font-size:17px;font-weight:850}
+.symbol-sub{font-size:10px;color:var(--muted);margin-top:2px}
+select{background:#0b1320;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:11px;max-width:100%}
+.toolbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:10px 0}
+.toolbar .btn{padding:7px 10px}
+.separator{height:22px;width:1px;background:var(--line);margin:0 3px}
+.chart-frame{width:100%;height:min(70vh,760px);min-height:470px;border:1px solid #26354b;border-radius:10px;overflow:hidden;background:#080d17;position:relative}
+.chart-frame iframe{display:block;width:100%;height:100%;border:0}
+.chart-foot{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:9px 2px 0;color:var(--muted);font-size:10px}
+.sidebar{display:grid;gap:12px}
+.side{padding:13px}
+.side-title{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0 0 11px;font-size:12px;letter-spacing:.7px}
+.tag{font-size:9px;padding:4px 7px;border-radius:5px;background:#332817;color:var(--gold2);white-space:nowrap}
+.tag.ready{background:#12352d;color:#8ce4c3}
+.tag.wait{background:#202b3b;color:#b8c8df}
+.signal-box{padding:12px;border-radius:10px;background:linear-gradient(135deg,#172235,#101722);border:1px solid #30405a}
+.signal-line{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.signal{font-size:20px;font-weight:900;letter-spacing:1px;color:var(--gold2)}
+.signal-note{color:var(--muted);font-size:10px;margin-top:6px}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px}
+.info{padding:9px;background:var(--panel2);border:1px solid #202c3e;border-radius:8px}
+.info label{display:block;color:var(--muted);font-size:9px}
+.info strong{display:block;font-size:13px;margin-top:4px}
+.list-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid #202b3c;font-size:11px}
+.list-row:last-child{border:0}
+.muted{color:var(--muted)}
+.feature-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:12px}
+.feature{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:12px;min-height:85px}
+.feature b{display:block;font-size:11px;margin-bottom:5px}
+.feature span{display:block;color:var(--muted);font-size:10px;line-height:1.5}
+.notice{padding:10px;border:1px solid #55452b;background:#282116;color:#e5d1a8;border-radius:8px;font-size:10px;line-height:1.5;margin-top:10px}
+footer{text-align:center;color:#74839a;font-size:10px;padding:15px 5px}
+@media(max-width:1050px){
+.main-grid{grid-template-columns:1fr}
+.sidebar{grid-template-columns:repeat(2,minmax(0,1fr))}
+.chart-frame{height:64vh}
+}
+@media(max-width:650px){
+.app{padding:7px}
+.topbar{padding:10px;align-items:flex-start}
+.actions{justify-content:flex-start}
+.pill{font-size:9px}
+.market-strip{grid-template-columns:1fr 1fr;gap:7px}
+.metric{padding:9px}
+.metric strong{font-size:15px}
+.main-grid{grid-template-columns:1fr}
+.sidebar{grid-template-columns:1fr}
+.chart-card{padding:8px}
+.chart-frame{height:60vh;min-height:390px}
+.symbol-title{font-size:15px}
+.feature-grid{grid-template-columns:1fr 1fr}
+.toolbar{gap:5px}
+.toolbar .btn{padding:7px 8px;font-size:10px}
+}
+</style>
 </head>
+
 <body>
-  <header class="top">
-    <div><div class="brand">ASHISH <span>GOLD AI</span> · SMC PRO</div><div class="sub">Independent Gold Analysis Workspace</div></div>
-    <div class="topright"><span id="connection" class="badge off">DATA NOT CONNECTED</span><span class="badge">BUILD 02 · HYBRID CHART</span></div>
-  </header>
-  <main class="wrap">
-    <section class="stats">
-      <div class="stat"><div class="label">SYMBOL</div><div class="value">XAU/USD</div></div>
-      <div class="stat"><div class="label">LAST PRICE</div><div class="value" id="lastPrice">TradingView</div></div>
-      <div class="stat"><div class="label">PRICE CHANGE</div><div class="value" id="priceChange">Embedded feed</div></div>
-      <div class="stat"><div class="label">DATA STATUS</div><div class="value" id="dataStatus" style="font-size:15px">Chart loading</div></div>
-    </section>
-    <section class="layout">
-      <div class="panel">
-        <div class="panelhead"><h2>GOLD · TRADINGVIEW CHART</h2><div class="sub" id="chartSymbol">OANDA:XAUUSD · Embedded chart</div></div>
-        <div class="toolbar" id="timeframes">
-          <button data-tf="1" class="active">1m</button><button data-tf="5">5m</button><button data-tf="15">15m</button><button data-tf="30">30m</button><button data-tf="60">1H</button><button data-tf="240">4H</button><button data-tf="D">1D</button>
-          <button id="fitChart">Fit chart</button>
-        </div>
-        <div id="chart" class="chartbox"><iframe id="tvChart" title="TradingView XAUUSD chart" src="https://www.tradingview.com/widgetembed/?symbol=OANDA%3AXAUUSD&interval=15&theme=dark&style=1&timezone=Asia%2FKolkata&hide_top_toolbar=false&hide_side_toolbar=false&allow_symbol_change=true" style="width:100%;height:100%;border:0" allowfullscreen loading="lazy"></iframe></div>
-        <div class="notice">TradingView chart is embedded here. Quotes and features depend on TradingView symbol availability and its widget permissions. Custom indicators will run in our separate analysis engine when its own candle feed is connected.</div>
+<div class="app">
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">AG</div>
+    <div>
+      <h1>ASHISH GOLD AI <span style="color:var(--gold)">· SMC PRO</span></h1>
+      <p>PROFESSIONAL XAUUSD ANALYSIS TERMINAL</p>
+    </div>
+  </div>
+  <div class="actions">
+    <span class="pill"><span class="dot"></span>TRADINGVIEW CHART</span>
+    <span class="pill">BUILD 02 · LIVE CHART</span>
+    <button class="btn" id="reload">↻ Reload</button>
+  </div>
+</header>
+
+<section class="market-strip">
+  <div class="metric">
+    <label>INSTRUMENT</label>
+    <strong>XAUUSD</strong>
+    <small>Gold / US Dollar · Spot</small>
+  </div>
+  <div class="metric">
+    <label>CHART SOURCE</label>
+    <strong>TradingView</strong>
+    <small>Provider / broker feed</small>
+  </div>
+  <div class="metric">
+    <label>MARKET DATA</label>
+    <strong id="marketState">Chart loading…</strong>
+    <small>Live status shown by chart provider</small>
+  </div>
+  <div class="metric">
+    <label>LOCAL TIME</label>
+    <strong id="clock">--:--:--</strong>
+    <small>Asia / Kolkata</small>
+  </div>
+</section>
+
+<div class="main-grid">
+<main>
+
+<section class="card chart-card">
+  <div class="chart-head">
+    <div class="symbol-area">
+      <div>
+        <div class="symbol-title" id="symbolTitle">XAUUSD · Gold / US Dollar</div>
+        <div class="symbol-sub">Interactive TradingView chart · Dark theme</div>
       </div>
-      <aside class="side">
-        <section class="panel"><div class="panelhead"><h2>INDICATOR MANAGER</h2><span class="sub">Custom · No 3-indicator cap</span></div><div class="content">
-          <div class="sectiontitle">Moving averages</div>
-          <div class="row"><label for="ema9">EMA 9</label><input class="toggle" id="ema9" type="checkbox" data-ind="EMA9"></div>
-          <div class="row"><label for="ema21">EMA 21</label><input class="toggle" id="ema21" type="checkbox" data-ind="EMA21"></div>
-          <div class="row"><label for="ema50">EMA 50</label><input class="toggle" id="ema50" type="checkbox" data-ind="EMA50"></div>
-          <div class="row"><label for="ema200">EMA 200</label><input class="toggle" id="ema200" type="checkbox" data-ind="EMA200"></div>
-          <div class="sectiontitle">Momentum & volatility</div>
-          <div class="row"><label for="rsi">RSI 14</label><input class="toggle" id="rsi" type="checkbox" data-ind="RSI14"></div>
-          <div class="row"><label for="macd">MACD</label><input class="toggle" id="macd" type="checkbox" data-ind="MACD"></div>
-          <div class="row"><label for="bb">Bollinger Bands</label><input class="toggle" id="bb" type="checkbox" data-ind="BB"></div>
-          <div class="row"><label for="vwap">VWAP</label><input class="toggle" id="vwap" type="checkbox" data-ind="VWAP"></div>
-          <div class="row"><label for="atr">ATR 14</label><input class="toggle" id="atr" type="checkbox" data-ind="ATR14"></div>
-          <div class="notice">Indicators are listed in the manager. Their calculations and chart overlays will be enabled after real candle data is connected.</div>
-        </div></section>
-        <section class="panel"><div class="panelhead"><h2>AI MARKET PANEL</h2><span class="badge off">NOT ACTIVE</span></div><div class="content"><div class="signal"><div class="label">CURRENT BIAS</div><strong>WAIT</strong><div class="muted">No live data — no trade signal generated.</div></div><div class="grid2" style="margin-top:9px"><div class="signal"><div class="label">ENTRY</div><strong>—</strong></div><div class="signal"><div class="label">STOP LOSS</div><strong>—</strong></div><div class="signal"><div class="label">TARGET 1</div><strong>—</strong></div><div class="signal"><div class="label">CONFIDENCE</div><strong>—</strong></div></div></div></section>
-        <section class="panel"><div class="panelhead"><h2>HYBRID DATA STATUS</h2></div><div class="content"><div class="signal"><div class="label">CHART PROVIDER</div><strong>TradingView</strong><div class="muted">Embedded XAU/USD chart. No API key is required for this chart widget.</div></div><div class="notice">Important: the embedded chart does not expose its candle data to our page. Our custom indicators, SMC calculations and AI signals need a separate permitted market-data feed. Never paste a private API key into public GitHub code.</div></div></section>
-      </aside>
-    </section>
-    <div class="foot">ASHISH GOLD AI · Built step by step · Risk calculator intentionally excluded</div>
-  </main>
-  <script>
-    const tvFrame = document.getElementById('tvChart');
-    const timeframeButtons = document.querySelectorAll('#timeframes button[data-tf]');
-    timeframeButtons.forEach(button => button.addEventListener('click', () => {
-      const interval = button.dataset.tf;
-      timeframeButtons.forEach(item => item.classList.toggle('active', item === button));
-      const base = 'https://www.tradingview.com/widgetembed/?symbol=OANDA%3AXAUUSD';
-      tvFrame.src = `${base}&interval=${encodeURIComponent(interval)}&theme=dark&style=1&timezone=Asia%2FKolkata&hide_top_toolbar=false&hide_side_toolbar=false&allow_symbol_change=true`;
-      document.getElementById('chartSymbol').textContent = `OANDA:XAUUSD · ${button.textContent} · TradingView`;
-    });
-    document.getElementById('fitChart').addEventListener('click', () => {
-      // The embedded TradingView widget owns its chart controls; use its built-in fit/scale controls.
-      tvFrame.focus();
-    });
-    document.getElementById('connection').textContent = 'TRADINGVIEW EMBED';
-    document.getElementById('connection').classList.remove('off');
-    document.getElementById('dataStatus').textContent = 'Embedded chart';
-  </script>
+      <select id="symbol" aria-label="Select symbol">
+        <option value="OANDA:XAUUSD">OANDA · XAUUSD Spot</option>
+        <option value="FOREXCOM:XAUUSD">FOREX.com · XAUUSD</option>
+        <option value="TVC:GOLD">TVC · GOLD</option>
+        <option value="COMEX:GC1!">COMEX · Gold Futures</option>
+      </select>
+    </div>
+    <button class="btn gold" id="fullscreen">⛶ Full Screen</button>
+  </div>
+
+  <div class="toolbar" id="timeframes">
+    <button class="btn" data-tf="1">1m</button>
+    <button class="btn" data-tf="3">3m</button>
+    <button class="btn" data-tf="5">5m</button>
+    <button class="btn active" data-tf="15">15m</button>
+    <button class="btn" data-tf="30">30m</button>
+    <button class="btn" data-tf="60">1H</button>
+    <button class="btn" data-tf="240">4H</button>
+    <button class="btn" data-tf="D">1D</button>
+    <button class="btn" data-tf="W">1W</button>
+    <span class="separator"></span>
+    <button class="btn" id="openTradingView">Open TradingView ↗</button>
+  </div>
+
+  <div class="chart-frame" id="chartFrame">
+    <iframe id="tv" title="Live XAUUSD TradingView chart" loading="eager" allowfullscreen
+      src="https://s.tradingview.com/widgetembed/?symbol=OANDA%3AXAUUSD&interval=15&theme=dark&style=1&timezone=Asia%2FKolkata&hide_top_toolbar=false&hide_side_toolbar=false&allow_symbol_change=true&save_image=false&withdateranges=true"></iframe>
+  </div>
+
+  <div class="chart-foot">
+    <span>Chart data and trading sessions depend on the selected TradingView symbol/feed.</span>
+    <span id="selectedSymbol">OANDA:XAUUSD · 15m</span>
+  </div>
+</section>
+
+<div class="feature-grid">
+  <div class="feature">
+    <b>SMART MONEY CONCEPTS</b>
+    <span>BOS · CHoCH · Order Blocks · FVG · Liquidity Sweep. Custom calculations are not connected to the embedded chart yet.</span>
+  </div>
+  <div class="feature">
+    <b>TECHNICAL INDICATORS</b>
+    <span>EMA · RSI · MACD · ADX · ATR · VWAP · Bollinger Bands. Use the chart's Indicators menu for native TradingView indicators.</span>
+  </div>
+  <div class="feature">
+    <b>CANDLESTICK SCANNER</b>
+    <span>Engulfing · Doji · Hammer · Shooting Star · Pin Bar. Scanner will activate after a separate verified candle-data engine is connected.</span>
+  </div>
+</div>
+
+</main>
+
+<aside class="sidebar">
+
+  <section class="card side">
+    <h2 class="side-title">AI MARKET ANALYSIS <span class="tag wait">WAITING FOR DATA</span></h2>
+    <div class="signal-box">
+      <div class="signal-line">
+        <span class="signal">WAIT</span>
+        <span class="tag wait">NO SIGNAL</span>
+      </div>
+      <div class="signal-note">No independent candle feed connected. No BUY/SELL recommendation is generated from the embedded chart.</div>
+    </div>
+    <div class="info-grid">
+      <div class="info"><label>ENTRY</label><strong>—</strong></div>
+      <div class="info"><label>STOP LOSS</label><strong>—</strong></div>
+      <div class="info"><label>TARGET 1</label><strong>—</strong></div>
+      <div class="info"><label>TARGET 2</label><strong>—</strong></div>
+      <div class="info"><label>TARGET 3</label><strong>—</strong></div>
+      <div class="info"><label>CONFIDENCE</label><strong>—</strong></div>
+    </div>
+  </section>
+
+  <section class="card side">
+    <h2 class="side-title">TERMINAL MODULES <span class="tag">ROADMAP</span></h2>
+    <div class="list-row"><span>TradingView live chart</span><span class="tag ready">ACTIVE</span></div>
+    <div class="list-row"><span>Symbol / timeframe controls</span><span class="tag ready">ACTIVE</span></div>
+    <div class="list-row"><span>Custom indicator overlays</span><span class="tag wait">NEXT</span></div>
+    <div class="list-row"><span>SMC calculation engine</span><span class="tag wait">NEXT</span></div>
+    <div class="list-row"><span>Live XAUUSD API for analysis</span><span class="tag wait">NOT CONNECTED</span></div>
+    <div class="list-row"><span>Trading journal / alerts</span><span class="tag wait">NEXT</span></div>
+    <div class="notice">TradingView ka embedded chart apne candle data ko website JavaScript ke saath share nahi karta. Isliye custom SMC aur AI calculations ke liye alag authorized live data feed zaroori hai.</div>
+  </section>
+
+  <section class="card side">
+    <h2 class="side-title">INDICATOR TOOLBOX <span class="tag">TV NATIVE</span></h2>
+    <div class="list-row"><span>EMA 9 / 21 / 50 / 200</span><span class="muted">Add via Indicators</span></div>
+    <div class="list-row"><span>RSI 14 · MACD</span><span class="muted">Add via Indicators</span></div>
+    <div class="list-row"><span>ADX · ATR · VWAP</span><span class="muted">Add via Indicators</span></div>
+    <div class="list-row"><span>Bollinger · Stoch RSI</span><span class="muted">Add via Indicators</span></div>
+    <div class="notice">Chart ke top toolbar mein Indicators button se TradingView ke available indicators add kar sakte ho. Availability account aur TradingView rules par depend karti hai.</div>
+  </section>
+
+</aside>
+</div>
+
+<footer>
+ASHISH GOLD AI · SMC PRO — Risk Calculator excluded · Premium Footprint / DOM reserved for a later phase.
+</footer>
+
+</div>
+
+<script>
+(()=>{
+ const $=id=>document.getElementById(id);
+ const tv=$('tv'),frame=$('chartFrame'),symbol=$('symbol');
+ let tf='15';
+
+ const names={
+   'OANDA:XAUUSD':'OANDA · XAUUSD Spot',
+   'FOREXCOM:XAUUSD':'FOREX.com · XAUUSD',
+   'TVC:GOLD':'TVC · GOLD',
+   'COMEX:GC1!':'COMEX · Gold Futures'
+ };
+
+ function updateChart(){
+   const s=symbol.value;
+
+   tv.src='https://s.tradingview.com/widgetembed/?symbol='
+     +encodeURIComponent(s)
+     +'&interval='+encodeURIComponent(tf)
+     +'&theme=dark&style=1&timezone=Asia%2FKolkata'
+     +'&hide_top_toolbar=false&hide_side_toolbar=false'
+     +'&allow_symbol_change=true&save_image=false&withdateranges=true';
+
+   $('symbolTitle').textContent=names[s]||s;
+   $('selectedSymbol').textContent=s+' · '+tf;
+   $('marketState').textContent='Provider chart';
+ }
+
+ document.querySelectorAll('[data-tf]').forEach(b=>b.addEventListener('click',()=>{
+   tf=b.dataset.tf;
+   document.querySelectorAll('[data-tf]').forEach(x=>x.classList.toggle('active',x===b));
+   updateChart();
+ }));
+
+ symbol.addEventListener('change',updateChart);
+ $('reload').addEventListener('click',updateChart);
+
+ $('openTradingView').addEventListener('click',()=>{
+   window.open('https://www.tradingview.com/chart/?symbol='+encodeURIComponent(symbol.value),'_blank','noopener');
+ });
+
+ $('fullscreen').addEventListener('click',()=>{
+   if(frame.requestFullscreen) frame.requestFullscreen();
+   else{
+     frame.style.position='fixed';
+     frame.style.inset='6px';
+     frame.style.zIndex='99999';
+     frame.style.height='calc(100dvh - 12px)';
+   }
+ });
+
+ document.addEventListener('fullscreenchange',()=>{
+   if(!document.fullscreenElement){
+     frame.style.position='';
+     frame.style.inset='';
+     frame.style.zIndex='';
+     frame.style.height='';
+   }
+ });
+
+ function clock(){
+   $('clock').textContent=new Intl.DateTimeFormat('en-IN',{
+     timeZone:'Asia/Kolkata',
+     hour:'2-digit',
+     minute:'2-digit',
+     second:'2-digit',
+     hour12:false
+   }).format(new Date());
+ }
+
+ clock();
+ setInterval(clock,1000);
+})();
+</script>
 </body>
 </html>
