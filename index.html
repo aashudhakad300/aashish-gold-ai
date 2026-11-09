@@ -50,6 +50,114 @@ header{background:#111827;padding:18px;font-size:22px;font-weight:bold}
 <p>Final Decision: WAIT</p>
 </div>
 <p style="color:#aaa">ASHISH GOLD AI SMC PRO</p>
+<h3>📲 NOTIFICATIONS</h3>
+<div style="background:#151d2b;padding:15px;border-radius:10px;margin:10px 0;">
+<p>Telegram: Not Connected</p>
+<p>WhatsApp: Not Connected</p>
+<p>Alert Status: Waiting</p>
 </div>
+
+<h3>📌 CANDLESTICK PATTERNS</h3>
+<div style="background:#151d2b;padding:15px;border-radius:10px;margin:10px 0;">
+<p>Bullish Engulfing: Scanning</p>
+<p>Bearish Engulfing: Scanning</p>
+<p>Hammer: Scanning</p>
+<p>Shooting Star: Scanning</p>
+<p>Morning / Evening Star: Scanning</p>
+<p>Doji / Pin Bar: Scanning</p>
+<p>Tweezer Top / Bottom: Scanning</p>
+</div>
+
+</div>
+</body><h2>🧮 GOLD RISK CALCULATOR</h2>
+
+<div style="background:#151d2b;padding:15px;border-radius:10px;margin:10px 0;">
+
+<label>Account Balance ($)</label>
+<input id="balance" type="number" value="1000"
+style="width:100%;padding:10px;margin:8px 0;">
+
+<label>Risk Per Trade (%)</label>
+<input id="risk" type="number" value="0.7" step="0.1"
+style="width:100%;padding:10px;margin:8px 0;">
+
+<label>Trade Direction</label>
+<select id="direction" style="width:100%;padding:10px;margin:8px 0;">
+<option value="BUY">BUY</option>
+<option value="SELL">SELL</option>
+</select>
+
+<label>Entry Price</label>
+<input id="entry" type="number" step="0.01"
+placeholder="Example: 4000"
+style="width:100%;padding:10px;margin:8px 0;">
+
+<label>Stop Loss Price</label>
+<input id="sl" type="number" step="0.01"
+placeholder="Example: 3990"
+style="width:100%;padding:10px;margin:8px 0;">
+
+<button onclick="calculateGoldRisk()"
+style="width:100%;padding:13px;background:#16a34a;color:white;border:0;border-radius:8px;font-size:16px;margin-top:10px;">
+CALCULATE TRADE
+</button>
+
+<div id="riskResult" style="margin-top:15px;line-height:2;">
+Enter your trade details.
+</div>
+
+</div>
+
+<script>
+function calculateGoldRisk(){
+
+let balance = Number(document.getElementById("balance").value);
+let risk = Number(document.getElementById("risk").value);
+let entry = Number(document.getElementById("entry").value);
+let sl = Number(document.getElementById("sl").value);
+let direction = document.getElementById("direction").value;
+
+let result = document.getElementById("riskResult");
+
+if(balance <= 0 || risk <= 0 || risk > 100 ||
+entry <= 0 || sl <= 0){
+result.innerHTML = "⚠️ Please enter valid values.";
+return;
+}
+
+if((direction === "BUY" && sl >= entry) ||
+(direction === "SELL" && sl <= entry)){
+result.innerHTML = "⚠️ Stop Loss direction is incorrect.";
+return;
+}
+
+let distance = Math.abs(entry - sl);
+let riskAmount = balance * risk / 100;
+
+let tp1 = direction === "BUY"
+? entry + distance
+: entry - distance;
+
+let tp2 = direction === "BUY"
+? entry + distance * 2
+: entry - distance * 2;
+
+let tp3 = direction === "BUY"
+? entry + distance * 3
+: entry - distance * 3;
+
+result.innerHTML = `
+<h3>📊 TRADE CALCULATION</h3>
+Risk Amount: $${riskAmount.toFixed(2)}<br>
+Price Risk: ${distance.toFixed(2)}<br>
+Entry: ${entry}<br>
+Stop Loss: ${sl}<br>
+TP1 (1:1): ${tp1.toFixed(2)}<br>
+TP2 (1:2): ${tp2.toFixed(2)}<br>
+TP3 (1:3): ${tp3.toFixed(2)}<br>
+Risk Reward: 1:3
+`;
+}
+</script>
 </body>
 </html>
